@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LV.03 · 爸妈翻我手机 — Socialfix</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#050514; --bg-1:#0a0a1f; --primary:#7c3aed; --primary-2:#ec4899;
+  --accent:#06d6a0; --accent-2:#ffd60a; --accent-3:#38bdf8; --danger:#ef4444;
+  --text:#f5f5ff; --text-2:#c7c7e0; --text-3:#8b8bb0;
+  --border: rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg-0);color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;overflow-x:hidden}
+.pixel{font-family:'Press Start 2P',monospace}
+
+.bg-gradient{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(1000px 700px at 15% 10%, rgba(124,58,237,.35), transparent 60%),
+  radial-gradient(900px 600px at 85% 90%, rgba(236,72,153,.28), transparent 60%),
+  linear-gradient(180deg,#05051a,#0a0a1f 40%,#050514);}
+.stars{position:fixed;inset:0;z-index:-1;opacity:.3;background-image:
+  radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+  radial-gradient(1px 1px at 30% 60%, #fff, transparent),
+  radial-gradient(1px 1px at 50% 30%, #fff, transparent),
+  radial-gradient(2px 2px at 75% 75%, #fff, transparent),
+  radial-gradient(1px 1px at 85% 15%, #fff, transparent);
+background-size:600px 600px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(20px);background:rgba(10,10,31,.65);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:8px;display:grid;place-items:center}
+.logo-mark::before{content:"</>";font-family:'Press Start 2P';font-size:9px;color:#fff}
+.logo-text{font-family:'Press Start 2P';font-size:11px}
+.nav-right{display:flex;gap:20px;align-items:center;font-size:13px;color:var(--text-2)}
+.nav-right a{color:var(--text-2);text-decoration:none}
+.nav-right a:hover{color:#fff}
+
+.container{max-width:1200px;margin:0 auto;padding:100px 40px 60px}
+
+/* Level header */
+.lv-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.lv-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;
+  background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.3);border-radius:20px;
+  color:var(--primary-2);font-size:12px;font-weight:600;margin-bottom:14px}
+.lv-tag .pixel{font-size:10px}
+.lv-head h1{font-size:44px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.lv-head .desc{font-size:15px;color:var(--text-2);max-width:600px;line-height:1.6}
+.diff{display:flex;gap:6px;margin-top:14px;align-items:center;font-size:13px;color:var(--text-3)}
+.diff-heart{width:14px;height:14px;background:var(--primary-2);clip-path:polygon(50% 0,80% 25%,100% 50%,50% 100%,0 50%,20% 25%)}
+.diff-heart.o{background:rgba(255,255,255,.15)}
+.lv-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:12px 22px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:.25s;cursor:pointer;border:none;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;
+  box-shadow:0 10px 24px rgba(124,58,237,.4)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+
+/* Grid layout */
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+
+.panel{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:24px}
+.panel-eyebrow{font-family:'Press Start 2P';font-size:10px;color:var(--accent-2);letter-spacing:.15em;margin-bottom:10px}
+.panel h3{font-size:22px;font-weight:700;margin-bottom:8px}
+.panel .p{font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:20px}
+
+/* Scenario chat preview */
+.scene{background:rgba(5,5,20,.5);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.scene-time{font-size:11px;color:var(--text-3);text-align:center;margin-bottom:14px;letter-spacing:.15em}
+.msg{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.msg-avatar{width:36px;height:36px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;
+  font-family:'Press Start 2P';font-size:10px;color:#fff}
+.avatar-mom{background:linear-gradient(135deg,var(--primary),var(--primary-2))}
+.avatar-me{background:linear-gradient(135deg,var(--accent),var(--accent-3))}
+.avatar-narr{background:rgba(255,214,10,.15);color:var(--accent-2);border:1px solid rgba(255,214,10,.3)}
+.msg-body{background:rgba(255,255,255,.04);border-radius:12px;padding:12px 14px;max-width:80%}
+.msg .who{font-size:11px;color:var(--text-3);margin-bottom:4px;font-weight:600}
+.msg .txt{font-size:14px;line-height:1.55}
+.msg.narr .msg-body{background:transparent;border:1px dashed rgba(255,214,10,.3);color:var(--accent-2);font-style:italic}
+
+/* Breathing exercise */
+.breath{display:flex;align-items:center;gap:20px;padding:20px;
+  background:linear-gradient(160deg,rgba(6,214,160,.12),rgba(56,189,248,.06));
+  border:1px solid rgba(6,214,160,.2);border-radius:16px}
+.breath-orb{width:80px;height:80px;flex-shrink:0;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(6,214,160,.9),rgba(56,189,248,.4));
+  box-shadow:0 0 30px rgba(6,214,160,.5);animation:breathe 5s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.8);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+.breath-txt h4{font-size:15px;margin-bottom:4px}
+.breath-txt p{font-size:13px;color:var(--text-2)}
+
+/* Wrong examples */
+.wrong-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+.wrong{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:14px}
+.wrong .lab{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--danger);margin-bottom:8px;font-weight:600}
+.wrong .lab::before{content:"✗";font-family:'Press Start 2P';font-size:11px}
+.wrong .txt{font-size:13px;color:var(--text);margin-bottom:8px;font-style:italic}
+.wrong .why{font-size:12px;color:var(--text-3);line-height:1.5}
+
+/* Strategy steps */
+.strategy .step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.strategy .step:last-child{border-bottom:none}
+.strategy .step-num{width:36px;height:36px;flex-shrink:0;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:10px;display:grid;place-items:center;font-family:'Press Start 2P';font-size:12px;color:#fff}
+.strategy .step h4{font-size:15px;margin-bottom:4px}
+.strategy .step p{font-size:13px;color:var(--text-2);line-height:1.55}
+.strategy .step .example{margin-top:8px;padding:8px 12px;background:rgba(6,214,160,.08);border-left:2px solid var(--accent);
+  border-radius:6px;font-size:12px;color:var(--accent);font-style:italic}
+
+/* Sidebar */
+.side .panel{margin-bottom:20px}
+.info-list{display:flex;flex-direction:column;gap:12px}
+.info-row{display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-row .lab{color:var(--text-3)}
+.info-row .val{color:var(--text);font-weight:600}
+.dim-list{display:flex;flex-direction:column;gap:14px}
+.dim{display:flex;align-items:center;gap:12px}
+.dim-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.d1{background:rgba(236,72,153,.15)}.d2{background:rgba(255,214,10,.15)}
+.d3{background:rgba(56,189,248,.15)}.d4{background:rgba(6,214,160,.15)}
+.dim-info{flex:1}
+.dim-info h5{font-size:14px;margin-bottom:2px}
+.dim-info p{font-size:12px;color:var(--text-3);line-height:1.4}
+
+.phrase{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:12px;padding:14px;margin-bottom:12px;position:relative}
+.phrase:last-child{margin-bottom:0}
+.phrase .badge{position:absolute;top:-8px;left:14px;font-family:'Press Start 2P';font-size:9px;
+  background:var(--primary);color:#fff;padding:3px 8px;border-radius:6px}
+.phrase .txt{font-size:14px;color:var(--text);line-height:1.55;margin-top:6px}
+.phrase .note{font-size:11px;color:var(--text-3);margin-top:8px}
+
+.reward{background:linear-gradient(135deg,rgba(255,214,10,.2),rgba(255,214,10,.05));
+  border:1px solid rgba(255,214,10,.3);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px}
+.reward-emoji{font-size:34px}
+.reward-info h5{font-family:'Press Start 2P';font-size:11px;color:var(--accent-2);margin-bottom:4px}
+.reward-info p{font-size:12px;color:var(--text-2)}
+
+.cta-bar{position:sticky;bottom:20px;margin-top:32px;display:flex;justify-content:center}
+.cta-bar .btn-primary{padding:18px 40px;font-size:16px;font-family:'Press Start 2P';font-size:13px;letter-spacing:.05em}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .lv-head h1{font-size:32px}
+  .wrong-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="stars"></div>
+
+<nav>
+  <a class="logo" href="index.html">
+    <div class="logo-mark"></div>
+    <div class="logo-text">SOCIALFIX</div>
+  </a>
+  <div class="nav-right">
+    <a href="journey.html">← 冒险地图</a>
+    <span class="pixel" style="font-size:10px;color:var(--accent-2)">LV.03</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="lv-head">
+    <div>
+      <div class="lv-tag"><span class="pixel">CH.1 · LV.03</span> · 家庭对话</div>
+      <h1>爸妈翻我手机</h1>
+      <p class="desc">刚放学到家，你发现妈妈坐在你床边，正低头看你手机的聊天记录。她抬起头，语气不太好。这一次，你要怎么接？</p>
+      <div class="diff">
+        难度：<div class="diff-heart"></div><div class="diff-heart"></div><div class="diff-heart"></div><div class="diff-heart"></div><div class="diff-heart o"></div>
+        <span style="margin-left:12px">· 建议练习 3 遍</span>
+      </div>
+    </div>
+    <div class="lv-actions">
+      <a href="simulator.html" class="btn btn-primary">▶ 进入训练场</a>
+      <a href="journey.html" class="btn btn-ghost">↺ 换一关</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="main">
+      <div class="panel">
+        <div class="panel-eyebrow">◆ SCENE · 场景重现</div>
+        <h3>那一刻，你的手心开始出汗</h3>
+        <p class="p">先来体验一下情境。这不是训练，只是"看一眼"你要面对的对手。</p>
+
+        <div class="scene">
+          <div class="scene-time">— 周三 · 17:42 · 你家客厅 —</div>
+          <div class="msg narr">
+            <div class="msg-avatar avatar-narr">*</div>
+            <div class="msg-body">
+              <div class="txt">你推开门，妈妈坐在沙发上，正拿着你的手机。她抬头看你，眉头皱着。</div>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-avatar avatar-mom">M</div>
+            <div class="msg-body">
+              <div class="who">妈妈</div>
+              <div class="txt">你今天怎么这么晚才回来。这个"Lily"是谁？你们聊天怎么说到"周五见"？</div>
+            </div>
+          </div>
+          <div class="msg narr">
+            <div class="msg-avatar avatar-narr">*</div>
+            <div class="msg-body">
+              <div class="txt">你心跳加速。第一反应：想吼回去。第二反应：想装傻。第三反应……你还没想到。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="breath">
+          <div class="breath-orb"></div>
+          <div class="breath-txt">
+            <h4>先呼吸 5 秒，再回答</h4>
+            <p>训练开始前，跟着这个小球一起深呼吸一次。降级从"你自己"开始。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-eyebrow">◆ TRAPS · 4 种最容易踩的坑</div>
+        <h3>如果你这么回，就会被"扣血"</h3>
+        <p class="p">下面这些反应，我们统计过——是 80% 少年的第一反应，但它们几乎都会让局面更糟。</p>
+
+        <div class="wrong-grid">
+          <div class="wrong">
+            <div class="lab">爆发型</div>
+            <div class="txt">"你凭什么看我手机！你有没有尊重过我？！"</div>
+            <div class="why">爆发会让对方立即进入防御。她会用"我是你妈"来压你，然后你会被更死地控制住。</div>
+          </div>
+          <div class="wrong">
+            <div class="lab">冷战型</div>
+            <div class="txt">（一言不发，扭头进房间，砰！）</div>
+            <div class="why">砰的一声等于告诉她"你猜对了，我在藏东西"，反而放大她的焦虑，明天翻得更狠。</div>
+          </div>
+          <div class="wrong">
+            <div class="lab">迎合型</div>
+            <div class="txt">"哦……就是同学啦，没什么，你别看了。"</div>
+            <div class="why">看似化解了，但你自己会憋出内伤，而且没有解决"她随时会再翻"的问题。</div>
+          </div>
+          <div class="wrong">
+            <div class="lab">辩护型</div>
+            <div class="txt">"我们班同学都这样啊，就你管这么严。"</div>
+            <div class="why">把话题引到"别人怎么样"，会让对方觉得你在找借口。她会更强调"我不管别人，只管你"。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel strategy">
+        <div class="panel-eyebrow">◆ STRATEGY · 通关四步法</div>
+        <h3>「先降级，再对话，再立界，再邀请」</h3>
+        <p class="p">这个顺序不能颠倒。任何一步跳过，都会被"扣血"。</p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>降级 · 先让空气冷 3 度</h4>
+            <p>不要立刻反驳。先做一个"物理动作"：放下书包 / 倒杯水 / 深呼一口气。给自己 3 秒的缓冲。</p>
+            <div class="example">"妈，我先把书包放下。"（说完就去做，别站在门口对峙）</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>共情 · 先接住她的担心</h4>
+            <p>爸妈翻手机 90% 是因为焦虑，不是控制。先"看到"她的焦虑，她才会愿意听下一句。</p>
+            <div class="example">"我知道你担心我，看到我聊那些你不熟的名字，心里会打鼓。"</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>立界 · 温柔但清晰</h4>
+            <p>说出你的感受和你需要的空间。不指责，只描述。</p>
+            <div class="example">"但我也想有一点点自己的空间。手机对我来说不只是工具，是我和朋友们的日记本。"</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>邀请 · 提出一个可谈的方案</h4>
+            <p>把"我 vs 你"变成"我们 vs 问题"。给她一个参与感，她会松手。</p>
+            <div class="example">"要不我们约定，你有担心可以直接问我，我保证不撒谎。翻手机这事，先暂停一下，好不好？"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="panel">
+        <div class="panel-eyebrow">◆ INTEL · 关卡情报</div>
+        <div class="info-list">
+          <div class="info-row"><span class="lab">对手</span><span class="val">妈妈（焦虑型）</span></div>
+          <div class="info-row"><span class="lab">场景</span><span class="val">家 · 客厅</span></div>
+          <div class="info-row"><span class="lab">回合数</span><span class="val">5-8 回合</span></div>
+          <div class="info-row"><span class="lab">通关分</span><span class="val">≥ 75 分</span></div>
+          <div class="info-row"><span class="lab">奖励 XP</span><span class="val">+ 180</span></div>
+          <div class="info-row"><span class="lab">失败惩罚</span><span class="val">- 1 HP</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-eyebrow">◆ RUBRIC · 四维评分</div>
+        <div class="dim-list">
+          <div class="dim">
+            <div class="dim-icon d1">💗</div>
+            <div class="dim-info">
+              <h5>共情度</h5>
+              <p>你有没有先"看见"对方的情绪</p>
+            </div>
+          </div>
+          <div class="dim">
+            <div class="dim-icon d2">🛡️</div>
+            <div class="dim-info">
+              <h5>边界感</h5>
+              <p>你有没有清楚说出自己的需要</p>
+            </div>
+          </div>
+          <div class="dim">
+            <div class="dim-icon d3">🧩</div>
+            <div class="dim-info">
+              <h5>建设性</h5>
+              <p>有没有提出"下一步怎么办"</p>
+            </div>
+          </div>
+          <div class="dim">
+            <div class="dim-icon d4">🌊</div>
+            <div class="dim-info">
+              <h5>情绪降级</h5>
+              <p>话说完，对方是更松还是更紧</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-eyebrow">◆ TOOLBOX · 备胎金句</div>
+        <p class="p" style="margin-bottom:16px">进场景之前，把这三句"备胎"存在脑子里。</p>
+
+        <div class="phrase">
+          <div class="badge">共情</div>
+          <div class="txt">"我知道你担心我，我不生你气。"</div>
+          <div class="note">在她皱眉时用，先把火降下来</div>
+        </div>
+        <div class="phrase">
+          <div class="badge">边界</div>
+          <div class="txt">"我也需要一点属于我自己的空间。"</div>
+          <div class="note">句式清晰，只说自己感受，不指责</div>
+        </div>
+        <div class="phrase">
+          <div class="badge">邀请</div>
+          <div class="txt">"要不我们一起想个办法？"</div>
+          <div class="note">把她拉到"队友"位置，她就没法继续攻击</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-eyebrow">◆ REWARD · 通关奖励</div>
+        <div class="reward">
+          <div class="reward-emoji">🕊️</div>
+          <div class="reward-info">
+            <h5>徽章 · 冲突降级</h5>
+            <p>首次在家庭场景中把对话温度降下来</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-bar">
+    <a class="btn btn-primary" href="simulator.html">▶ 开始训练</a>
+  </div>
+</div>
+
+</body>
+</html>

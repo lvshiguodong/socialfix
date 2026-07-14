@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>战报 · LV.03 — Socialfix</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#050514; --primary:#7c3aed; --primary-2:#ec4899;
+  --accent:#06d6a0; --accent-2:#ffd60a; --accent-3:#38bdf8; --danger:#ef4444;
+  --text:#f5f5ff; --text-2:#c7c7e0; --text-3:#8b8bb0;
+  --border: rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg-0);color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;overflow-x:hidden}
+.pixel{font-family:'Press Start 2P',monospace}
+
+.bg-gradient{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(1000px 700px at 15% 10%, rgba(124,58,237,.35), transparent 60%),
+  radial-gradient(900px 600px at 85% 90%, rgba(236,72,153,.28), transparent 60%),
+  radial-gradient(1200px 700px at 50% 50%, rgba(6,214,160,.14), transparent 60%),
+  linear-gradient(180deg,#05051a,#0a0a1f 40%,#050514);}
+.stars{position:fixed;inset:0;z-index:-1;opacity:.3;background-image:
+  radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+  radial-gradient(1px 1px at 30% 60%, #fff, transparent),
+  radial-gradient(2px 2px at 75% 75%, #fff, transparent),
+  radial-gradient(1px 1px at 85% 15%, #fff, transparent);
+background-size:600px 600px}
+
+/* Confetti */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.conf{position:absolute;top:-20px;width:8px;height:14px;border-radius:2px;animation:fall linear infinite}
+@keyframes fall{
+  0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(20px);background:rgba(10,10,31,.7);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:8px;display:grid;place-items:center}
+.logo-mark::before{content:"</>";font-family:'Press Start 2P';font-size:9px;color:#fff}
+.logo-text{font-family:'Press Start 2P';font-size:11px}
+.nav-right{display:flex;gap:20px;align-items:center;font-size:13px}
+.nav-right a{color:var(--text-2);text-decoration:none}
+.nav-right a:hover{color:#fff}
+
+.container{max-width:1180px;margin:0 auto;padding:100px 40px 80px;position:relative;z-index:2}
+
+/* Header */
+.result-hero{text-align:center;margin-bottom:48px;position:relative}
+.stamp{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:999px;
+  font-family:'Press Start 2P';font-size:11px;letter-spacing:.15em;margin-bottom:16px}
+.stamp.pass{background:rgba(6,214,160,.15);color:var(--accent);border:1px solid rgba(6,214,160,.35)}
+.stamp.mid{background:rgba(255,214,10,.15);color:var(--accent-2);border:1px solid rgba(255,214,10,.35)}
+.stamp.fail{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.35)}
+.result-hero h1{font-size:48px;font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+.result-hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent-3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-hero .sub{font-size:16px;color:var(--text-2);max-width:600px;margin:0 auto}
+
+/* Main score */
+.main-score-card{background:linear-gradient(160deg,rgba(124,58,237,.2),rgba(236,72,153,.1));
+  border:1px solid rgba(236,72,153,.3);border-radius:28px;padding:48px;margin-bottom:32px;
+  display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center;position:relative;overflow:hidden}
+.main-score-card::before{content:"";position:absolute;inset:-50%;background:radial-gradient(circle,rgba(236,72,153,.15),transparent 60%);animation:pulse 4s infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:.25}}
+
+.ring-wrap{position:relative;width:220px;height:220px;z-index:1}
+.ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-val{font-family:'Press Start 2P';font-size:52px;background:linear-gradient(135deg,var(--accent-2),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ring-lab{font-size:12px;color:var(--text-3);letter-spacing:.2em;margin-top:8px}
+
+.right-side{position:relative;z-index:1}
+.rank-line{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.rank-badge{font-family:'Press Start 2P';font-size:32px;padding:8px 20px;border-radius:14px;
+  background:linear-gradient(135deg,var(--accent-2),#f97316);color:#0a0a1f;box-shadow:0 12px 32px rgba(255,214,10,.35)}
+.rank-txt h2{font-size:22px;margin-bottom:4px}
+.rank-txt p{font-size:13px;color:var(--text-2)}
+.summary-row{display:flex;gap:16px;margin-top:20px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:13px;display:flex;align-items:center;gap:8px}
+.chip .emo{font-size:16px}
+.chip strong{color:var(--accent-2);font-family:'Press Start 2P';font-size:12px}
+
+.actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:.25s;cursor:pointer;border:none;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;
+  box-shadow:0 10px 24px rgba(124,58,237,.4)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin-bottom:32px}
+.panel{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:20px;padding:26px}
+.panel h3{font-size:19px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel .eyebrow{font-family:'Press Start 2P';font-size:10px;color:var(--accent-2);letter-spacing:.15em;margin-bottom:10px}
+
+/* Radar chart */
+.radar-wrap{display:flex;justify-content:center;padding:10px 0}
+.radar{width:320px;height:320px}
+.radar-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.rl-item{display:flex;align-items:center;gap:8px;font-size:13px}
+.rl-dot{width:12px;height:12px;border-radius:4px}
+.rl-val{margin-left:auto;font-family:'Press Start 2P';font-size:11px}
+
+/* Dim breakdown */
+.dim-row{padding:14px 0;border-bottom:1px solid var(--border)}
+.dim-row:last-child{border-bottom:none}
+.dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dim-name{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.dim-emo{font-size:20px}
+.dim-val{font-family:'Press Start 2P';font-size:16px}
+.dim-val.good{color:var(--accent)}
+.dim-val.mid{color:var(--accent-2)}
+.dim-val.low{color:var(--danger)}
+.dim-note{font-size:13px;color:var(--text-2);line-height:1.55;margin-top:6px}
+.dim-bar{background:rgba(255,255,255,.06);height:8px;border-radius:999px;overflow:hidden;margin-top:6px}
+.dim-fill{height:100%;border-radius:999px;transition:1s ease-out}
+.f1{background:linear-gradient(90deg,var(--primary-2),var(--primary))}
+.f2{background:linear-gradient(90deg,var(--accent-2),#f97316)}
+.f3{background:linear-gradient(90deg,var(--accent-3),#0ea5e9)}
+.f4{background:linear-gradient(90deg,var(--accent),#10b981)}
+
+/* Rounds table */
+.round-list{display:flex;flex-direction:column;gap:10px}
+.round-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:14px}
+.round-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rc-tag{font-family:'Press Start 2P';font-size:10px;color:var(--accent-2)}
+.rc-score{font-family:'Press Start 2P';font-size:13px}
+.rc-txt{font-size:13px;color:var(--text-2);line-height:1.5;font-style:italic;padding:6px 0;border-left:2px solid var(--primary-2);padding-left:10px;margin:6px 0}
+.rc-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mini-tag{font-family:'Press Start 2P';font-size:8px;padding:3px 6px;border-radius:5px}
+.mt-good{background:rgba(6,214,160,.15);color:var(--accent)}
+.mt-mid{background:rgba(255,214,10,.15);color:var(--accent-2)}
+.mt-low{background:rgba(239,68,68,.15);color:var(--danger)}
+
+/* Achievements */
+.achieve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.ach{background:linear-gradient(160deg,rgba(255,214,10,.15),rgba(255,214,10,.03));
+  border:1px solid rgba(255,214,10,.3);border-radius:14px;padding:14px;text-align:center;transition:.25s;position:relative;overflow:hidden}
+.ach:hover{transform:translateY(-3px)}
+.ach.new::before{content:"NEW";position:absolute;top:6px;right:6px;font-family:'Press Start 2P';font-size:8px;
+  background:var(--accent);color:#0a0a1f;padding:2px 5px;border-radius:4px}
+.ach-emo{font-size:34px;margin-bottom:6px}
+.ach-name{font-size:12px;font-weight:700;margin-bottom:4px}
+.ach-desc{font-size:10px;color:var(--text-3);line-height:1.4}
+
+/* Fixy replay */
+.fixy-block{background:linear-gradient(160deg,rgba(6,214,160,.1),rgba(56,189,248,.04));
+  border:1px solid rgba(6,214,160,.25);border-radius:16px;padding:18px;margin-bottom:14px}
+.fixy-block:last-child{margin-bottom:0}
+.fb-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-3));
+  display:grid;place-items:center;font-family:'Press Start 2P';font-size:10px;color:#0a0a1f}
+.fb-title{font-size:13px;font-weight:700}
+.fb-txt{font-size:13px;color:var(--text-2);line-height:1.6}
+.fb-txt strong{color:var(--text);font-weight:600}
+.fb-txt em{color:var(--accent-2);font-style:normal;background:rgba(255,214,10,.1);padding:1px 6px;border-radius:4px;font-size:12px}
+
+/* Rewards */
+.rewards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+.reward{background:linear-gradient(160deg,rgba(124,58,237,.15),rgba(236,72,153,.05));
+  border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.rw-emo{font-size:26px;margin-bottom:4px}
+.rw-val{font-family:'Press Start 2P';font-size:13px;color:var(--accent-2);margin-bottom:4px}
+.rw-lab{font-size:11px;color:var(--text-3)}
+
+/* Bottom actions */
+.bottom-bar{background:linear-gradient(160deg,rgba(124,58,237,.2),rgba(236,72,153,.1));
+  border:1px solid rgba(236,72,153,.3);border-radius:24px;padding:40px;text-align:center;margin-top:32px}
+.bottom-bar h2{font-size:28px;margin-bottom:10px}
+.bottom-bar p{font-size:15px;color:var(--text-2);margin-bottom:24px}
+.bottom-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.bottom-actions .btn{padding:14px 28px}
+
+/* Toolbox */
+.toolbox{display:flex;flex-direction:column;gap:10px}
+.tool-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-left:3px solid var(--primary-2);
+  border-radius:10px;padding:12px 14px}
+.tool-lab{font-family:'Press Start 2P';font-size:9px;color:var(--primary-2);margin-bottom:5px}
+.tool-txt{font-size:14px;line-height:1.5}
+
+@media (max-width:900px){
+  .main-score-card{grid-template-columns:1fr;text-align:center}
+  .rank-line{justify-content:center}
+  .grid{grid-template-columns:1fr}
+  .achieve-grid,.rewards-grid{grid-template-columns:repeat(2,1fr)}
+  .result-hero h1{font-size:34px}
+  .ring-wrap{margin:0 auto}
+}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="stars"></div>
+<div class="confetti" id="confetti"></div>
+
+<nav>
+  <a class="logo" href="index.html">
+    <div class="logo-mark"></div>
+    <div class="logo-text">SOCIALFIX</div>
+  </a>
+  <div class="nav-right">
+    <a href="journey.html">← 冒险地图</a>
+    <a href="simulator.html" style="color:var(--accent-2)" class="pixel">↺ 再练一次</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="result-hero">
+    <div class="stamp" id="stamp"></div>
+    <h1>本回合<br><span id="rankTitle">干得漂亮！</span></h1>
+    <p class="sub" id="heroSub">你完成了 LV.03「爸妈翻我手机」。下面是 Fixy 为你做的完整战报。</p>
+  </div>
+
+  <div class="main-score-card">
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 220 220" width="220" height="220">
+        <defs>
+          <linearGradient id="ringG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#06d6a0"/>
+            <stop offset="1" stop-color="#38bdf8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="110" cy="110" r="92" stroke="rgba(255,255,255,.08)" stroke-width="14" fill="none"/>
+        <circle id="ringFg" cx="110" cy="110" r="92" stroke="url(#ringG)" stroke-width="14" fill="none"
+                stroke-linecap="round" transform="rotate(-90 110 110)"
+                stroke-dasharray="578" stroke-dashoffset="578" style="transition:stroke-dashoffset 1.4s ease-out"/>
+      </svg>
+      <div class="ring-num">
+        <div class="ring-val" id="ringVal">0</div>
+        <div class="ring-lab">TOTAL SCORE</div>
+      </div>
+    </div>
+
+    <div class="right-side">
+      <div class="rank-line">
+        <div class="rank-badge" id="rankLetter">A</div>
+        <div class="rank-txt">
+          <h2 id="rankName">进阶段位 · Gold</h2>
+          <p id="rankDesc">你的这次表现，在同龄训练者中排前 22%。</p>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="chip"><span class="emo">💗</span>共情 <strong id="c1">72</strong></div>
+        <div class="chip"><span class="emo">🛡️</span>边界 <strong id="c2">65</strong></div>
+        <div class="chip"><span class="emo">🧩</span>建设 <strong id="c3">78</strong></div>
+        <div class="chip"><span class="emo">🌊</span>降级 <strong id="c4">85</strong></div>
+      </div>
+      <div class="actions">
+        <a href="simulator.html" class="btn btn-primary">↺ 再练一次</a>
+        <a href="journey.html" class="btn btn-ghost">→ 下一关</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="eyebrow">◆ 四维雷达</div>
+      <h3>你的能力分布</h3>
+      <div class="radar-wrap">
+        <svg class="radar" id="radar" viewBox="0 0 320 320">
+          <defs>
+            <linearGradient id="radG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7c3aed" stop-opacity=".65"/>
+              <stop offset="1" stop-color="#ec4899" stop-opacity=".45"/>
+            </linearGradient>
+          </defs>
+          <!-- concentric polygons drawn by JS -->
+          <g id="radarGrid"></g>
+          <g id="radarAxes"></g>
+          <polygon id="radarShape" points="" fill="url(#radG)" stroke="#ec4899" stroke-width="2"/>
+          <g id="radarPoints"></g>
+          <g id="radarLabels"></g>
+        </svg>
+      </div>
+      <div class="radar-legend">
+        <div class="rl-item"><div class="rl-dot" style="background:var(--primary-2)"></div>共情度 <span class="rl-val" id="l1">72</span></div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--accent-2)"></div>边界感 <span class="rl-val" id="l2">65</span></div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--accent-3)"></div>建设性 <span class="rl-val" id="l3">78</span></div>
+        <div class="rl-item"><div class="rl-dot" style="background:var(--accent)"></div>情绪降级 <span class="rl-val" id="l4">85</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="eyebrow">◆ 逐维复盘</div>
+      <h3>你哪里做得好，哪里可以更好</h3>
+      <div class="dim-row">
+        <div class="dim-head">
+          <div class="dim-name"><span class="dim-emo">💗</span>共情度</div>
+          <div class="dim-val" id="dv1">72</div>
+        </div>
+        <div class="dim-bar"><div class="dim-fill f1" id="db1" style="width:0"></div></div>
+        <div class="dim-note" id="dn1">你在第 2、3 回合"接住了"妈妈的情绪，这是这一关最关键的动作。再稳一点，可以在第 1 句就先说"我知道你担心"。</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-head">
+          <div class="dim-name"><span class="dim-emo">🛡️</span>边界感</div>
+          <div class="dim-val" id="dv2">65</div>
+        </div>
+        <div class="dim-bar"><div class="dim-fill f2" id="db2" style="width:0"></div></div>
+        <div class="dim-note" id="dn2">边界表达略偏软，第 3 回合可以更清楚地说出"我需要什么"。多用"我"字句，少用"你别"。</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-head">
+          <div class="dim-name"><span class="dim-emo">🧩</span>建设性</div>
+          <div class="dim-val" id="dv3">78</div>
+        </div>
+        <div class="dim-bar"><div class="dim-fill f3" id="db3" style="width:0"></div></div>
+        <div class="dim-note" id="dn3">第 4 回合你提出了"我们约定"的方案，非常漂亮。这是把对方从"敌人"拉到"队友"位置的关键动作。</div>
+      </div>
+      <div class="dim-row">
+        <div class="dim-head">
+          <div class="dim-name"><span class="dim-emo">🌊</span>情绪降级</div>
+          <div class="dim-val" id="dv4">85</div>
+        </div>
+        <div class="dim-bar"><div class="dim-fill f4" id="db4" style="width:0"></div></div>
+        <div class="dim-note" id="dn4">全场没有出现攻击性词汇，节奏稳。这是这一次能通关的核心原因。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="eyebrow">◆ 回合逐条</div>
+      <h3>Fixy 挑出的三个高光 / 低谷时刻</h3>
+      <div class="round-list" id="roundList">
+        <!-- Filled by JS or fallback -->
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="eyebrow">◆ FIXY 深度复盘</div>
+      <h3>教练想跟你说的三件事</h3>
+      <div class="fixy-block">
+        <div class="fb-head">
+          <div class="fb-avatar">F</div>
+          <div class="fb-title">① 你 get 到了"顺序"</div>
+        </div>
+        <div class="fb-txt">很多人一被翻手机，第一反应就是<strong>先立界</strong>。但你先<em>降级 + 共情</em>，再立界。这个顺序是这一关的秘密武器，也是绝大多数家庭对话的通用公式。</div>
+      </div>
+      <div class="fixy-block">
+        <div class="fb-head">
+          <div class="fb-avatar">F</div>
+          <div class="fb-title">② 但你有一个小坑</div>
+        </div>
+        <div class="fb-txt">第 3 回合你说边界的时候，用了"<em>你别翻我</em>"这种句式。可以换成"<strong>我希望我们能……</strong>"——同样意思，但没有"指责味"，对方接得更顺。</div>
+      </div>
+      <div class="fixy-block">
+        <div class="fb-head">
+          <div class="fb-avatar">F</div>
+          <div class="fb-title">③ 下次可以试试</div>
+        </div>
+        <div class="fb-txt">面对爸妈，可以试试"<em>身体在场 + 眼神在场 + 情绪在场</em>"三件套。你已经做到了第 3 点，明天试试前两点——把书包放下、放下手机、看着他们说。你会发现她软得更快。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">◆ TOOLBOX · 带走的三句话</div>
+    <h3>这一关的"锦囊包"</h3>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">这三句话已经存入你的备胎库。真的遇到时，直接用。</p>
+    <div class="toolbox">
+      <div class="tool-item">
+        <div class="tool-lab">共情 · 开场先说</div>
+        <div class="tool-txt">"我知道你担心我，我不生你气。"</div>
+      </div>
+      <div class="tool-item">
+        <div class="tool-lab">边界 · 温柔立场</div>
+        <div class="tool-txt">"我也需要一点点属于我自己的空间。"</div>
+      </div>
+      <div class="tool-item">
+        <div class="tool-lab">邀请 · 变成队友</div>
+        <div class="tool-txt">"要不我们一起想个办法？"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="eyebrow">◆ 解锁成就</div>
+      <h3>本次训练拿到的徽章</h3>
+      <div class="achieve-grid">
+        <div class="ach new">
+          <div class="ach-emo">🕊️</div>
+          <div class="ach-name">冲突降级</div>
+          <div class="ach-desc">首次在家庭对话中把气氛降下来</div>
+        </div>
+        <div class="ach new">
+          <div class="ach-emo">🧭</div>
+          <div class="ach-name">先接再立</div>
+          <div class="ach-desc">先共情再立界的完整回合</div>
+        </div>
+        <div class="ach">
+          <div class="ach-emo">🌱</div>
+          <div class="ach-name">连续 3 关</div>
+          <div class="ach-desc">今日连续通关 3 个关卡</div>
+        </div>
+        <div class="ach" style="opacity:.35">
+          <div class="ach-emo">💎</div>
+          <div class="ach-name">满分回合</div>
+          <div class="ach-desc">单回合综合分 ≥ 95</div>
+        </div>
+        <div class="ach" style="opacity:.35">
+          <div class="ach-emo">👑</div>
+          <div class="ach-name">章节王者</div>
+          <div class="ach-desc">通关第一章所有关卡</div>
+        </div>
+        <div class="ach" style="opacity:.35">
+          <div class="ach-emo">🎯</div>
+          <div class="ach-name">零攻击</div>
+          <div class="ach-desc">全场无攻击性词汇</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="eyebrow">◆ 本回合奖励</div>
+      <h3>装备已放入你的背包</h3>
+      <div class="rewards-grid">
+        <div class="reward">
+          <div class="rw-emo">⭐</div>
+          <div class="rw-val">+ 180</div>
+          <div class="rw-lab">XP</div>
+        </div>
+        <div class="reward">
+          <div class="rw-emo">🪙</div>
+          <div class="rw-val">+ 32</div>
+          <div class="rw-lab">Coins</div>
+        </div>
+        <div class="reward">
+          <div class="rw-emo">🔥</div>
+          <div class="rw-val">DAY 6</div>
+          <div class="rw-lab">连续训练</div>
+        </div>
+        <div class="reward">
+          <div class="rw-emo">🎁</div>
+          <div class="rw-val">×3</div>
+          <div class="rw-lab">解锁下一章</div>
+        </div>
+      </div>
+      <div style="margin-top:18px;padding:14px;background:rgba(6,214,160,.08);border:1px dashed rgba(6,214,160,.3);border-radius:12px;font-size:13px;color:var(--text-2);line-height:1.5">
+        🎉 <strong style="color:var(--accent)">解锁提示：</strong>再通关 1 关，即可进入 CH.2「校园与朋友」章节，遇到"暗恋对象已读不回"等场景。
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <h2>再来一次，你会更稳。</h2>
+    <p>数据显示：练过 3 遍的同学，在真实生活中用出这些话的成功率高 78%。</p>
+    <div class="bottom-actions">
+      <a href="simulator.html" class="btn btn-primary">↺ 再挑战一次</a>
+      <a href="journey.html" class="btn btn-ghost">🗺️ 回到冒险地图</a>
+      <a href="index.html" class="btn btn-ghost">🏠 回首页</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Load result from sessionStorage or fall back
+let res;
+try{
+  res = JSON.parse(localStorage.getItem('sf_result')||'null');
+}catch(e){}
+if(!res || typeof res.total !== 'number'){
+  res = {
+    total: 75,
+    empathy: 72, boundary: 65, build: 78, calm: 85,
+    rounds: [
+      { text:"妈，我先把书包放下。我知道你担心我。", empathy:80, boundary:20, build:15, calm:90, total:51 },
+      { text:"Lily 是我们班同学，周五约的是打球。", empathy:35, boundary:30, build:20, calm:85, total:42 },
+      { text:"我理解你担心，但手机里也有我想自己保留的东西。", empathy:75, boundary:75, build:20, calm:85, total:64 },
+      { text:"要不我们约定一下：你有担心可以直接问我，我保证不撒谎。", empathy:65, boundary:60, build:95, calm:80, total:75 },
+      { text:"谢谢你愿意听我说这么多。我知道你也不容易。", empathy:95, boundary:20, build:30, calm:90, total:59 }
+    ]
+  };
+}
+
+const total = Math.round(res.total);
+const emp = Math.round(res.empathy);
+const bnd = Math.round(res.boundary);
+const bld = Math.round(res.build);
+const clm = Math.round(res.calm);
+
+// Fill numbers
+document.getElementById('c1').textContent = emp;
+document.getElementById('c2').textContent = bnd;
+document.getElementById('c3').textContent = bld;
+document.getElementById('c4').textContent = clm;
+document.getElementById('l1').textContent = emp;
+document.getElementById('l2').textContent = bnd;
+document.getElementById('l3').textContent = bld;
+document.getElementById('l4').textContent = clm;
+document.getElementById('dv1').textContent = emp;
+document.getElementById('dv2').textContent = bnd;
+document.getElementById('dv3').textContent = bld;
+document.getElementById('dv4').textContent = clm;
+
+// Colored dim values
+[['dv1',emp],['dv2',bnd],['dv3',bld],['dv4',clm]].forEach(([id,v])=>{
+  const el = document.getElementById(id);
+  el.classList.add(v>=70?'good':v>=45?'mid':'low');
+});
+
+// Animate ring
+setTimeout(()=>{
+  const circ = 578;
+  document.getElementById('ringFg').style.strokeDashoffset = circ - (circ * total / 100);
+  // Count up
+  let cur = 0;
+  const step = ()=>{
+    cur += Math.max(1, Math.floor((total-cur)/6));
+    if(cur >= total){ cur = total; document.getElementById('ringVal').textContent = total; return; }
+    document.getElementById('ringVal').textContent = cur;
+    requestAnimationFrame(step);
+  };
+  step();
+  // Animate bars
+  setTimeout(()=>{
+    document.getElementById('db1').style.width = emp+'%';
+    document.getElementById('db2').style.width = bnd+'%';
+    document.getElementById('db3').style.width = bld+'%';
+    document.getElementById('db4').style.width = clm+'%';
+  }, 200);
+}, 200);
+
+// Stamp + rank
+const stamp = document.getElementById('stamp');
+const rankTitle = document.getElementById('rankTitle');
+const rankLetter = document.getElementById('rankLetter');
+const rankName = document.getElementById('rankName');
+const rankDesc = document.getElementById('rankDesc');
+const heroSub = document.getElementById('heroSub');
+
+if(total >= 85){
+  stamp.className='stamp pass'; stamp.textContent='★★★ PERFECT';
+  rankTitle.textContent = '几乎满分！';
+  rankLetter.textContent = 'S'; rankLetter.style.background='linear-gradient(135deg,#f5e142,#ff9500)';
+  rankName.textContent = 'S 段位 · Champion';
+  rankDesc.textContent = '同龄训练者中你排前 5%。这一关你彻底赢了。';
+} else if(total >= 70){
+  stamp.className='stamp pass'; stamp.textContent='★★ CLEARED';
+  rankTitle.textContent = '通关！干得漂亮！';
+  rankLetter.textContent = 'A'; rankLetter.style.background='linear-gradient(135deg,#ffd60a,#f97316)';
+  rankName.textContent = '进阶段位 · Gold';
+  rankDesc.textContent = '你的表现，在同龄训练者中排前 22%。';
+} else if(total >= 50){
+  stamp.className='stamp mid'; stamp.textContent='★ ALMOST';
+  rankTitle.textContent = '差一点点！';
+  rankLetter.textContent = 'B'; rankLetter.style.background='linear-gradient(135deg,#a3e635,#38bdf8)';
+  rankName.textContent = '成长段位 · Silver';
+  rankDesc.textContent = '再练 1-2 遍，就能稳定通关。看下面的复盘。';
+  heroSub.textContent = '通关线是 75 分。这次差一点点，Fixy 帮你看看哪里可以调整。';
+} else {
+  stamp.className='stamp fail'; stamp.textContent='TRY AGAIN';
+  rankTitle.textContent = '别灰心，再来一次。';
+  rankLetter.textContent = 'C'; rankLetter.style.background='linear-gradient(135deg,#8b8bb0,#38bdf8)';
+  rankName.textContent = '青铜段位 · Bronze';
+  rankDesc.textContent = '这一关本来就难。看下面的复盘，然后再来一次。';
+  heroSub.textContent = '这一次分数偏低——但每个人都是从这里开始的。看看 Fixy 帮你标出的高光和低谷。';
+}
+
+// Radar
+(function drawRadar(){
+  const svg = document.getElementById('radar');
+  const cx=160, cy=160, R=110;
+  const angles = [-90, 0, 90, 180]; // top right bottom left
+  const vals = [emp, bld, clm, bnd]; // top,right,bottom,left
+  const labels = ['💗 共情', '🧩 建设', '🌊 降级', '🛡️ 边界'];
+  const grid = document.getElementById('radarGrid');
+  const axes = document.getElementById('radarAxes');
+  const labG = document.getElementById('radarLabels');
+  const ptsG = document.getElementById('radarPoints');
+
+  // grid rings
+  [.25,.5,.75,1].forEach(f=>{
+    const pts = angles.map(a=>{
+      const rad = a*Math.PI/180;
+      return [cx + Math.cos(rad)*R*f, cy + Math.sin(rad)*R*f];
+    });
+    const p = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    p.setAttribute('points', pts.map(p=>p.join(',')).join(' '));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', 'rgba(255,255,255,.08)');
+    p.setAttribute('stroke-width', '1');
+    grid.appendChild(p);
+  });
+  // axes
+  angles.forEach(a=>{
+    const rad = a*Math.PI/180;
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1', cx); l.setAttribute('y1', cy);
+    l.setAttribute('x2', cx + Math.cos(rad)*R); l.setAttribute('y2', cy + Math.sin(rad)*R);
+    l.setAttribute('stroke', 'rgba(255,255,255,.1)'); l.setAttribute('stroke-width','1');
+    axes.appendChild(l);
+  });
+  // labels
+  angles.forEach((a,i)=>{
+    const rad = a*Math.PI/180;
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', cx + Math.cos(rad)*(R+22));
+    t.setAttribute('y', cy + Math.sin(rad)*(R+22) + 4);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('fill', '#c7c7e0');
+    t.setAttribute('font-size','13');
+    t.setAttribute('font-family',"'Noto Sans SC',sans-serif");
+    t.textContent = labels[i];
+    labG.appendChild(t);
+  });
+  // shape
+  const shape = document.getElementById('radarShape');
+  const pts = angles.map((a,i)=>{
+    const rad = a*Math.PI/180;
+    const f = vals[i]/100;
+    return [cx + Math.cos(rad)*R*f, cy + Math.sin(rad)*R*f];
+  });
+  shape.setAttribute('points', pts.map(p=>p.join(',')).join(' '));
+  // vertex dots
+  pts.forEach((p,i)=>{
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r','4');
+    const colors=['#ec4899','#38bdf8','#06d6a0','#ffd60a'];
+    c.setAttribute('fill',colors[i]);
+    ptsG.appendChild(c);
+  });
+})();
+
+// Rounds list
+(function renderRounds(){
+  const list = document.getElementById('roundList');
+  const rounds = res.rounds || [];
+  // Sort by descriptive rank: pick highest, lowest, and one middle
+  const sorted = [...rounds].map((r,i)=>({...r,i})).sort((a,b)=>b.total-a.total);
+  const featured = [];
+  if(sorted.length){
+    featured.push({...sorted[0], label:'🌟 高光时刻'});
+    if(sorted.length>2) featured.push({...sorted[Math.floor(sorted.length/2)], label:'⚙️ 稳定发挥'});
+    if(sorted.length>1) featured.push({...sorted[sorted.length-1], label:'💡 可以更好'});
+  }
+  list.innerHTML = featured.map(r=>{
+    const tag = (v,l)=> `<span class="mini-tag ${v>=60?'mt-good':v>=35?'mt-mid':'mt-low'}">${l} ${v}</span>`;
+    return `
+      <div class="round-card">
+        <div class="round-card-head">
+          <div class="rc-tag">R${r.i+1} · ${r.label}</div>
+          <div class="rc-score" style="color:${r.total>=70?'var(--accent)':r.total>=50?'var(--accent-2)':'var(--danger)'}">${r.total}</div>
+        </div>
+        <div class="rc-txt">"${r.text}"</div>
+        <div class="rc-mini">
+          ${tag(r.empathy,'共')}${tag(r.boundary,'界')}${tag(r.build,'建')}${tag(r.calm,'降')}
+        </div>
+      </div>`;
+  }).join('');
+})();
+
+// Confetti (only if pass)
+if(total >= 70){
+  const container = document.getElementById('confetti');
+  const colors = ['#7c3aed','#ec4899','#06d6a0','#ffd60a','#38bdf8'];
+  for(let i=0;i<40;i++){
+    const c = document.createElement('div');
+    c.className='conf';
+    c.style.left = (Math.random()*100)+'%';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2 + Math.random()*3)+'s';
+    c.style.animationDelay = (Math.random()*2)+'s';
+    container.appendChild(c);
+  }
+}
+</script>
+</body>
+</html>

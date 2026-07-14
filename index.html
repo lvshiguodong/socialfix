@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Socialfix · 修好你的社交 Bug</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#050514; --bg-1:#0a0a1f; --bg-2:#141433;
+  --primary:#7c3aed; --primary-2:#ec4899; --primary-3:#8b5cf6;
+  --accent:#06d6a0; --accent-2:#ffd60a; --accent-3:#38bdf8;
+  --danger:#ef4444;
+  --text:#f5f5ff; --text-2:#c7c7e0; --text-3:#8b8bb0;
+  --border: rgba(255,255,255,.08);
+  --glass: rgba(255,255,255,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg-0);color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;overflow-x:hidden;scroll-behavior:smooth}
+.pixel{font-family:'Press Start 2P',monospace;letter-spacing:.02em}
+
+/* Background */
+.bg-gradient{
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(1000px 700px at 15% 10%, rgba(124,58,237,.35), transparent 60%),
+    radial-gradient(900px 600px at 85% 20%, rgba(236,72,153,.28), transparent 60%),
+    radial-gradient(1200px 700px at 50% 100%, rgba(6,214,160,.14), transparent 60%),
+    linear-gradient(180deg,#05051a,#0a0a1f 40%,#050514);
+}
+.stars{position:fixed;inset:0;z-index:-1;opacity:.35;background-image:
+  radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+  radial-gradient(1px 1px at 30% 60%, #fff, transparent),
+  radial-gradient(1px 1px at 50% 30%, #fff, transparent),
+  radial-gradient(2px 2px at 75% 75%, #fff, transparent),
+  radial-gradient(1px 1px at 85% 15%, #fff, transparent),
+  radial-gradient(1px 1px at 20% 85%, #fff, transparent),
+  radial-gradient(2px 2px at 65% 45%, #fff, transparent);
+background-size:600px 600px;animation:twinkle 8s linear infinite}
+@keyframes twinkle{50%{opacity:.15}}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(20px);background:rgba(10,10,31,.6);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:10px;display:grid;place-items:center;box-shadow:0 8px 24px rgba(124,58,237,.4)}
+.logo-mark::before{content:"</>";font-family:'Press Start 2P';font-size:10px;color:#fff}
+.logo-text{font-family:'Press Start 2P';font-size:14px;color:#fff}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--text-2);text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav-links a:hover{color:var(--text)}
+.btn-nav{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff!important;
+  padding:10px 22px;border-radius:10px;font-weight:600;box-shadow:0 6px 20px rgba(124,58,237,.35)}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 40px 60px;position:relative}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center;width:100%}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;
+  background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.3);
+  border-radius:20px;color:var(--accent);font-size:12px;font-weight:600;margin-bottom:24px}
+.badge-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
+h1.title{font-size:64px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin-bottom:24px}
+h1.title span{background:linear-gradient(135deg,var(--primary-2),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{font-size:19px;line-height:1.7;color:var(--text-2);margin-bottom:36px;max-width:540px}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:40px}
+.btn{padding:16px 32px;border-radius:14px;font-weight:600;font-size:15px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:10px;transition:.25s;cursor:pointer;border:none;font-family:inherit}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;
+  box-shadow:0 12px 32px rgba(124,58,237,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(236,72,153,.5)}
+.btn-ghost{background:var(--glass);color:var(--text);border:1px solid var(--border);backdrop-filter:blur(12px)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.hero-stats{display:flex;gap:36px;padding-top:32px;border-top:1px solid var(--border)}
+.stat-num{font-family:'Press Start 2P';font-size:22px;color:var(--accent-2);margin-bottom:6px}
+.stat-label{font-size:12px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase}
+
+/* Hero visual */
+.hero-visual{position:relative;height:520px}
+.floating-card{position:absolute;background:rgba(20,20,51,.7);border:1px solid var(--border);
+  border-radius:16px;padding:16px;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.card-1{top:0;left:0;width:260px;animation:float 6s ease-in-out infinite}
+.card-2{top:80px;right:20px;width:240px;animation:float 6s ease-in-out infinite -2s}
+.card-3{bottom:60px;left:40px;width:280px;animation:float 6s ease-in-out infinite -4s}
+.card-4{bottom:0;right:0;width:220px;animation:float 6s ease-in-out infinite -3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  font-family:'Press Start 2P';font-size:10px;color:#fff}
+.chat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chat-name{font-size:13px;font-weight:600}
+.chat-text{font-size:13px;color:var(--text-2);line-height:1.5}
+.tag-ok{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--accent);
+  background:rgba(6,214,160,.12);padding:4px 10px;border-radius:999px;margin-top:8px}
+.tag-bad{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--danger);
+  background:rgba(239,68,68,.12);padding:4px 10px;border-radius:999px;margin-top:8px}
+
+/* Pixel character */
+.pixel-hero{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);z-index:2;
+  animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+
+/* Sections */
+section{padding:100px 40px;position:relative}
+.container{max-width:1200px;margin:0 auto}
+.section-eyebrow{font-family:'Press Start 2P';font-size:11px;color:var(--primary-2);letter-spacing:.15em;margin-bottom:14px;text-transform:uppercase;display:block}
+.section-title{font-size:44px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:16px;max-width:800px}
+.section-desc{font-size:17px;color:var(--text-2);max-width:640px;line-height:1.6;margin-bottom:56px}
+
+/* Problem cards */
+.problem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.problem-card{background:linear-gradient(160deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:20px;padding:28px;transition:.3s;position:relative;overflow:hidden}
+.problem-card:hover{transform:translateY(-6px);border-color:rgba(236,72,153,.3);box-shadow:0 20px 40px rgba(124,58,237,.15)}
+.problem-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,var(--primary),var(--primary-2));opacity:0;transition:.3s}
+.problem-card:hover::before{opacity:1}
+.problem-icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;margin-bottom:20px}
+.problem-icon.p1{background:linear-gradient(135deg,#ef4444,#f59e0b)}
+.problem-icon.p2{background:linear-gradient(135deg,#7c3aed,#ec4899)}
+.problem-icon.p3{background:linear-gradient(135deg,#06d6a0,#38bdf8)}
+.problem-icon.p4{background:linear-gradient(135deg,#ffd60a,#f97316)}
+.problem-card h3{font-size:19px;font-weight:700;margin-bottom:10px}
+.problem-card p{font-size:14px;color:var(--text-2);line-height:1.6}
+
+/* How it works */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.how-visual{background:linear-gradient(160deg,rgba(124,58,237,.15),rgba(236,72,153,.08));
+  border:1px solid var(--border);border-radius:24px;padding:40px;position:relative;overflow:hidden;min-height:480px}
+.how-visual::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(236,72,153,.2),transparent 60%);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:.2}}
+.game-mock{position:relative;z-index:1;background:rgba(5,5,20,.65);border:1px solid var(--border);
+  border-radius:18px;padding:24px;backdrop-filter:blur(20px)}
+.game-hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.hud-hp{display:flex;gap:6px}
+.heart{width:14px;height:14px;background:var(--primary-2);clip-path:polygon(50% 0,80% 25%,100% 50%,50% 100%,0 50%,20% 25%)}
+.hud-xp{font-family:'Press Start 2P';font-size:10px;color:var(--accent-2)}
+.mock-msg{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.mock-msg.you{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(236,72,153,.15));
+  border-color:rgba(236,72,153,.3);margin-left:40px}
+.mock-msg .who{font-size:11px;color:var(--text-3);margin-bottom:4px;font-weight:600}
+.mock-msg .txt{font-size:14px;line-height:1.5}
+.mock-scores{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+.score-chip{background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.3);border-radius:8px;
+  padding:8px 12px;font-size:11px;display:flex;justify-content:space-between}
+.score-chip .lab{color:var(--text-2)}
+.score-chip .val{color:var(--accent);font-family:'Press Start 2P'}
+
+.steps{display:flex;flex-direction:column;gap:32px}
+.step{display:flex;gap:20px;align-items:flex-start}
+.step-num{width:44px;height:44px;flex-shrink:0;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:12px;display:grid;place-items:center;font-family:'Press Start 2P';font-size:14px;box-shadow:0 8px 24px rgba(124,58,237,.35)}
+.step h4{font-size:18px;font-weight:700;margin-bottom:6px}
+.step p{font-size:14px;color:var(--text-2);line-height:1.6}
+
+/* Levels preview */
+.levels-scroll{display:flex;gap:20px;overflow-x:auto;padding-bottom:20px;scroll-snap-type:x mandatory;
+  scrollbar-width:thin;scrollbar-color:var(--primary) transparent}
+.levels-scroll::-webkit-scrollbar{height:8px}
+.levels-scroll::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px}
+.level-card{min-width:280px;background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:20px;padding:24px;scroll-snap-align:start;
+  transition:.25s;text-decoration:none;color:inherit;display:block}
+.level-card:hover{transform:translateY(-4px);border-color:var(--primary-2)}
+.level-num{font-family:'Press Start 2P';font-size:11px;color:var(--accent-2);margin-bottom:10px}
+.level-card h4{font-size:20px;font-weight:700;margin-bottom:8px}
+.level-card p{font-size:13px;color:var(--text-2);line-height:1.5;margin-bottom:16px;min-height:60px}
+.level-meta{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border)}
+.meta-tag{font-size:11px;padding:4px 10px;border-radius:999px;background:rgba(124,58,237,.15);color:var(--primary-3)}
+.meta-hp{font-size:11px;color:var(--text-3);display:flex;gap:3px}
+.meta-hp span{width:8px;height:8px;background:var(--primary-2);clip-path:polygon(50% 0,80% 25%,100% 50%,50% 100%,0 50%,20% 25%)}
+
+/* Testimonials */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.testi-card{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:20px;padding:28px;position:relative}
+.testi-quote{font-size:15px;line-height:1.7;color:var(--text);margin-bottom:20px}
+.testi-quote::before{content:'"';font-size:60px;color:var(--primary-2);position:absolute;top:0;left:20px;line-height:1;opacity:.3;font-family:serif}
+.testi-user{display:flex;align-items:center;gap:12px}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  display:grid;place-items:center;font-family:'Press Start 2P';font-size:12px}
+.testi-name{font-size:14px;font-weight:600}
+.testi-role{font-size:12px;color:var(--text-3)}
+
+/* CTA */
+.cta-section{padding:120px 40px}
+.cta-card{max-width:1000px;margin:0 auto;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(236,72,153,.15));
+  border:1px solid rgba(236,72,153,.3);border-radius:28px;padding:64px 48px;text-align:center;position:relative;overflow:hidden}
+.cta-card::before{content:"";position:absolute;inset:-50%;background:radial-gradient(circle,rgba(236,72,153,.25),transparent 60%);animation:pulse 5s ease-in-out infinite}
+.cta-card h2{font-size:42px;font-weight:800;margin-bottom:16px;letter-spacing:-.02em;position:relative}
+.cta-card p{font-size:17px;color:var(--text-2);margin-bottom:32px;position:relative}
+.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative}
+
+/* Footer */
+footer{padding:60px 40px 40px;border-top:1px solid var(--border);text-align:center}
+.footer-text{color:var(--text-3);font-size:13px}
+.footer-links{display:flex;justify-content:center;gap:32px;margin-top:16px}
+.footer-links a{color:var(--text-3);text-decoration:none;font-size:13px}
+.footer-links a:hover{color:var(--text)}
+
+@media (max-width:960px){
+  .hero-inner{grid-template-columns:1fr;gap:40px}
+  h1.title{font-size:44px}
+  .problem-grid{grid-template-columns:repeat(2,1fr)}
+  .how-grid{grid-template-columns:1fr;gap:40px}
+  .testi-grid{grid-template-columns:1fr}
+  .nav-links a:not(.btn-nav){display:none}
+  .hero-visual{height:420px}
+}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="stars"></div>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div class="logo-text">SOCIALFIX</div>
+  </div>
+  <div class="nav-links">
+    <a href="#problem">痛点</a>
+    <a href="#how">怎么玩</a>
+    <a href="#levels">关卡</a>
+    <a href="#testimonials">见证</a>
+    <a href="journey.html" class="btn-nav">开始冒险</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="badge"><span class="badge-dot"></span>V0.9 · 已陪伴 12,483 位少年</span>
+      <h1 class="title">修好你的<br><span>社交 Bug</span>，<br>不再被人际关系拉爆。</h1>
+      <p class="subtitle">一款专为 12–22 岁设计的社交训练游戏。用像素冒险的方式，把「不会拒绝」「不会道歉」「被同学冷落」这些心事，练成可以复用的技能。</p>
+      <div class="hero-ctas">
+        <a href="journey.html" class="btn btn-primary">进入冒险 →</a>
+        <a href="#how" class="btn btn-ghost">看看怎么玩</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">28</div>
+          <div class="stat-label">场景关卡</div>
+        </div>
+        <div>
+          <div class="stat-num">4D</div>
+          <div class="stat-label">实时反馈</div>
+        </div>
+        <div>
+          <div class="stat-num">96%</div>
+          <div class="stat-label">再来一次率</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="floating-card card-1">
+        <div class="chat-head">
+          <div class="chat-avatar" style="background:linear-gradient(135deg,#7c3aed,#ec4899)">M</div>
+          <div class="chat-name">妈妈</div>
+        </div>
+        <div class="chat-text">"我翻你手机怎么了？我又不是外人。"</div>
+      </div>
+
+      <div class="floating-card card-2">
+        <div class="chat-head">
+          <div class="chat-avatar" style="background:linear-gradient(135deg,#06d6a0,#38bdf8)">你</div>
+          <div class="chat-name">你的回应</div>
+        </div>
+        <div class="chat-text">"我知道你担心我，但手机里也有我想自己保留的东西，我们能不能约定一个方式？"</div>
+        <div class="tag-ok">✓ 共情 + 边界 · 得分 92</div>
+      </div>
+
+      <div class="floating-card card-3">
+        <div class="chat-head">
+          <div class="chat-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">同学</div>
+          <div class="chat-name">李同学</div>
+        </div>
+        <div class="chat-text">"作业借我抄一下嘛，就这一次。"</div>
+        <div class="tag-bad">✗ 上一次你答应了</div>
+      </div>
+
+      <div class="floating-card card-4">
+        <div class="chat-head">
+          <div class="chat-avatar" style="background:linear-gradient(135deg,#ffd60a,#f97316)">AI</div>
+          <div class="chat-name">教练 · Fixy</div>
+        </div>
+        <div class="chat-text">你的边界感 +1，但可以再温柔一点 😊</div>
+      </div>
+
+      <svg class="pixel-hero" width="120" height="140" viewBox="0 0 24 28" shape-rendering="crispEdges">
+        <!-- Pixel hero: purple hair, teal jacket -->
+        <rect x="8" y="2" width="8" height="1" fill="#7c3aed"/>
+        <rect x="7" y="3" width="10" height="1" fill="#7c3aed"/>
+        <rect x="6" y="4" width="12" height="2" fill="#7c3aed"/>
+        <rect x="7" y="6" width="10" height="4" fill="#f5d0c5"/>
+        <rect x="9" y="7" width="2" height="1" fill="#0a0a1f"/>
+        <rect x="13" y="7" width="2" height="1" fill="#0a0a1f"/>
+        <rect x="10" y="9" width="4" height="1" fill="#ec4899"/>
+        <rect x="6" y="10" width="12" height="8" fill="#06d6a0"/>
+        <rect x="10" y="12" width="4" height="2" fill="#ffd60a"/>
+        <rect x="6" y="18" width="5" height="6" fill="#38bdf8"/>
+        <rect x="13" y="18" width="5" height="6" fill="#38bdf8"/>
+        <rect x="6" y="24" width="5" height="2" fill="#7c3aed"/>
+        <rect x="13" y="24" width="5" height="2" fill="#7c3aed"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="container">
+    <span class="section-eyebrow">Why Socialfix</span>
+    <h2 class="section-title">那些你没跟人说的小崩溃，我们都懂。</h2>
+    <p class="section-desc">社交里最难的从来不是"说什么"，而是"我该怎么反应才不后悔"。这里就是你的练兵场。</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon p1">🫥</div>
+        <h3>被群聊冷落</h3>
+        <p>三个人明明认识，就我插不进话。是我太安静，还是他们不需要我？</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon p2">🙅</div>
+        <h3>不会拒绝</h3>
+        <p>「就这一次嘛」——嘴上"好"，心里MMP。想改，又怕伤感情。</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon p3">💥</div>
+        <h3>和爸妈爆吵</h3>
+        <p>关起门发一整晚呆。想沟通，又不想被他们的模板绕进去。</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon p4">📱</div>
+        <h3>不敢发消息</h3>
+        <p>草稿箱躺着 17 条。发过去又秒撤回，怕对方觉得我奇怪。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="container">
+    <span class="section-eyebrow">How it works</span>
+    <h2 class="section-title">像打游戏一样，练一遍你没练过的对话。</h2>
+    <div class="how-grid">
+      <div class="how-visual">
+        <div class="game-mock">
+          <div class="game-hud">
+            <div class="hud-hp">
+              <div class="heart"></div><div class="heart"></div><div class="heart"></div>
+              <div class="heart" style="opacity:.3"></div><div class="heart" style="opacity:.3"></div>
+            </div>
+            <div class="hud-xp">LV.3 · XP 420</div>
+          </div>
+          <div class="mock-msg">
+            <div class="who">妈妈</div>
+            <div class="txt">你今天怎么这么晚才回来，手机也不看！</div>
+          </div>
+          <div class="mock-msg you">
+            <div class="who">你</div>
+            <div class="txt">妈，路上堵车。我先歇一下，等下我们聊，好吗？</div>
+          </div>
+          <div class="mock-scores">
+            <div class="score-chip"><span class="lab">共情度</span><span class="val">85</span></div>
+            <div class="score-chip"><span class="lab">边界感</span><span class="val">72</span></div>
+            <div class="score-chip"><span class="lab">建设性</span><span class="val">80</span></div>
+            <div class="score-chip"><span class="lab">降级度</span><span class="val">90</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>选一个让你头疼的场景</h4>
+            <p>从关卡地图选择你的困境：拒绝同学、面对爸妈、约人吃饭、和喜欢的人聊天……</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>和 AI 对手来一场对话</h4>
+            <p>AI 会像真人一样回你——会翻白眼、会情绪化、也会被你打动。用嘴说出来，或者打字都行。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>四维反馈 + 修正建议</h4>
+            <p>每一句都会被评分：共情度 / 边界感 / 建设性 / 情绪降级。AI 教练 Fixy 会在旁边给你微调建议。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>练完再回到真实世界</h4>
+            <p>每关结束都有"锦囊包"——真实可用的三句话。下一次真的遇到时，你不会再愣住。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="levels">
+  <div class="container">
+    <span class="section-eyebrow">Level Preview</span>
+    <h2 class="section-title">28 个场景，从青铜到王者。</h2>
+    <p class="section-desc">每一关都是一个真实困境，通关一次，就多一个人生备胎回答。</p>
+    <div class="levels-scroll">
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.01</div>
+        <h4>加个微信吧？</h4>
+        <p>你想加同班漂亮学姐微信，怎么开口不奇怪？</p>
+        <div class="level-meta">
+          <span class="meta-tag">破冰</span>
+          <div class="meta-hp"><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.02</div>
+        <h4>作业能借我抄吗？</h4>
+        <p>关系好的同学又来借作业，你想拒绝但不想撕破脸。</p>
+        <div class="level-meta">
+          <span class="meta-tag">边界</span>
+          <div class="meta-hp"><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="level.html">
+        <div class="level-num">LV.03</div>
+        <h4>爸妈翻我手机</h4>
+        <p>刚放学回家，发现妈妈在翻你手机聊天记录。</p>
+        <div class="level-meta">
+          <span class="meta-tag">家庭 · 高难</span>
+          <div class="meta-hp"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.04</div>
+        <h4>群里被 @ 了</h4>
+        <p>三人小群里两人在合力挤兑你，你要不要接？</p>
+        <div class="level-meta">
+          <span class="meta-tag">冲突</span>
+          <div class="meta-hp"><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.05</div>
+        <h4>喜欢的人已读不回</h4>
+        <p>连续三条消息 TA 都没理你，要不要再发一条？</p>
+        <div class="level-meta">
+          <span class="meta-tag">恋爱</span>
+          <div class="meta-hp"><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.06</div>
+        <h4>朋友借钱不还</h4>
+        <p>三个月前借出去的 300 块，怎么开口要？</p>
+        <div class="level-meta">
+          <span class="meta-tag">金钱</span>
+          <div class="meta-hp"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.07</div>
+        <h4>组员摸鱼摆烂</h4>
+        <p>小组作业只有你在做，怎么让他们动起来？</p>
+        <div class="level-meta">
+          <span class="meta-tag">合作</span>
+          <div class="meta-hp"><span></span><span></span><span></span></div>
+        </div>
+      </a>
+      <a class="level-card" href="journey.html">
+        <div class="level-num">LV.08</div>
+        <h4>老师当众批评</h4>
+        <p>你被冤枉了，怎么当场不失态还澄清事实？</p>
+        <div class="level-meta">
+          <span class="meta-tag">权威</span>
+          <div class="meta-hp"><span></span><span></span><span></span><span></span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <div class="container">
+    <span class="section-eyebrow">What players say</span>
+    <h2 class="section-title">他们练完之后，是这么说的。</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-quote">第一次觉得，可以不听我妈的话又不吵起来。练完那关的第二周，我真的用了那三句话，我妈居然没炸。</div>
+        <div class="testi-user">
+          <div class="testi-avatar">Ay</div>
+          <div>
+            <div class="testi-name">Aya · 高二</div>
+            <div class="testi-role">通关"家庭对话"系列</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">我以为我很擅长拒绝，结果 Lv.2 我拿了 45 分。Fixy 说我"太硬"，让我加一句"我理解你"，就像开了外挂。</div>
+        <div class="testi-user">
+          <div class="testi-avatar">Ky</div>
+          <div>
+            <div class="testi-name">Kyle · 大一</div>
+            <div class="testi-role">"边界感"训练累计 32 次</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">最爱的地方是它不会给我塞鸡汤。它就让我再来一次、再来一次。像真的在打游戏，练熟了就不慌了。</div>
+        <div class="testi-user">
+          <div class="testi-avatar">Mi</div>
+          <div>
+            <div class="testi-name">Mia · 初三</div>
+            <div class="testi-role">S2 段位 · Silver</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-card">
+    <h2>准备好，去修一个 Bug 了吗？</h2>
+    <p>点进去只要 30 秒，第一关免费。练完你会发现——你并没有社交障碍，你只是没被教过。</p>
+    <div class="cta-buttons">
+      <a href="journey.html" class="btn btn-primary">开始第一关 →</a>
+      <a href="simulator.html" class="btn btn-ghost">直接试玩 Lv.3</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo" style="justify-content:center;margin-bottom:16px">
+    <div class="logo-mark"></div>
+    <div class="logo-text">SOCIALFIX</div>
+  </div>
+  <div class="footer-text">陪你练会那些学校没教过的话。</div>
+  <div class="footer-links">
+    <a href="#">关于我们</a>
+    <a href="#">隐私政策</a>
+    <a href="#">家长指南</a>
+    <a href="#">合作咨询</a>
+  </div>
+  <div class="footer-text" style="margin-top:24px;font-size:11px">© 2026 Socialfix · Made with 💜 for teens who care.</div>
+</footer>
+
+</body>
+</html>

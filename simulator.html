@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>训练场 · LV.03 — Socialfix</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#050514; --primary:#7c3aed; --primary-2:#ec4899;
+  --accent:#06d6a0; --accent-2:#ffd60a; --accent-3:#38bdf8; --danger:#ef4444;
+  --text:#f5f5ff; --text-2:#c7c7e0; --text-3:#8b8bb0;
+  --border: rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg-0);color:var(--text);font-family:'Inter','Noto Sans SC',sans-serif;overflow:hidden;height:100vh}
+.pixel{font-family:'Press Start 2P',monospace}
+
+.bg-gradient{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(1000px 700px at 15% 10%, rgba(124,58,237,.35), transparent 60%),
+  radial-gradient(900px 600px at 85% 90%, rgba(236,72,153,.28), transparent 60%),
+  linear-gradient(180deg,#05051a,#0a0a1f 40%,#050514);}
+.stars{position:fixed;inset:0;z-index:-1;opacity:.25;background-image:
+  radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+  radial-gradient(2px 2px at 75% 75%, #fff, transparent),
+  radial-gradient(1px 1px at 85% 15%, #fff, transparent);
+background-size:600px 600px}
+
+/* Top bar */
+.top{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px 24px;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  backdrop-filter:blur(20px);background:rgba(10,10,31,.7);border-bottom:1px solid var(--border);height:60px}
+.top-left{display:flex;align-items:center;gap:14px}
+.exit{color:var(--text-2);text-decoration:none;font-size:13px;padding:6px 10px;border-radius:8px}
+.exit:hover{background:rgba(255,255,255,.06);color:#fff}
+.lv-title{font-family:'Press Start 2P';font-size:11px;color:var(--accent-2)}
+.top-right{display:flex;gap:10px;align-items:center}
+.hp{display:flex;gap:3px}
+.hp-heart{width:14px;height:14px;background:var(--primary-2);clip-path:polygon(50% 0,80% 25%,100% 50%,50% 100%,0 50%,20% 25%)}
+.hp-heart.o{background:rgba(255,255,255,.15)}
+.round-info{font-family:'Press Start 2P';font-size:10px;color:var(--text-2);padding:6px 10px;background:rgba(255,255,255,.05);border-radius:8px}
+
+/* Layout */
+.stage{position:fixed;top:60px;left:0;right:0;bottom:0;display:grid;grid-template-columns:280px 1fr 320px}
+
+/* Left: scene + fixy */
+.left{border-right:1px solid var(--border);padding:20px;overflow-y:auto;background:rgba(5,5,20,.3)}
+.scene-card{background:linear-gradient(160deg,rgba(124,58,237,.15),rgba(236,72,153,.08));
+  border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:20px}
+.scene-card .eyebrow{font-family:'Press Start 2P';font-size:9px;color:var(--accent-2);margin-bottom:8px;letter-spacing:.1em}
+.scene-card h3{font-size:15px;margin-bottom:8px;font-weight:700}
+.scene-card p{font-size:12px;color:var(--text-2);line-height:1.55}
+.opponent{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border-radius:12px;margin-bottom:16px}
+.opp-avatar{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  border-radius:12px;display:grid;place-items:center;font-family:'Press Start 2P';font-size:12px}
+.opp-info h4{font-size:14px;margin-bottom:2px}
+.opp-info p{font-size:11px;color:var(--text-3)}
+.mood-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);margin-top:10px}
+.mood-track{flex:1;background:rgba(255,255,255,.08);height:6px;border-radius:999px;overflow:hidden}
+.mood-fill{background:linear-gradient(90deg,var(--danger),var(--accent-2));height:100%;width:70%;border-radius:999px;transition:.5s}
+
+.fixy{background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.25);border-radius:14px;padding:14px}
+.fixy-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fixy-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-3));
+  display:grid;place-items:center;font-family:'Press Start 2P';font-size:11px;color:#0a0a1f}
+.fixy-name{font-size:13px;font-weight:600}
+.fixy-role{font-size:10px;color:var(--text-3)}
+#fixyTip{font-size:12px;color:var(--text-2);line-height:1.55;min-height:60px}
+
+.tip-hist{margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.tip-hist-lab{font-family:'Press Start 2P';font-size:9px;color:var(--text-3);margin-bottom:8px}
+.tip-hist-list{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.tip-item{font-size:11px;color:var(--text-3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--accent)}
+
+/* Center: chat */
+.chat{display:flex;flex-direction:column;height:100%}
+.chat-log{flex:1;overflow-y:auto;padding:24px 32px;display:flex;flex-direction:column;gap:14px}
+.chat-log::-webkit-scrollbar{width:6px}
+.chat-log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
+
+.narr-line{align-self:center;font-size:11px;color:var(--text-3);letter-spacing:.15em;padding:8px 14px;background:rgba(255,255,255,.03);border-radius:999px;border:1px dashed var(--border)}
+
+.bubble{display:flex;gap:12px;max-width:80%;animation:pop .3s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.bubble.me{align-self:flex-end;flex-direction:row-reverse}
+.bub-avatar{width:36px;height:36px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
+  font-family:'Press Start 2P';font-size:10px;color:#fff}
+.av-mom{background:linear-gradient(135deg,var(--primary),var(--primary-2))}
+.av-me{background:linear-gradient(135deg,var(--accent),var(--accent-3))}
+.bub-body{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;padding:12px 16px;position:relative}
+.bubble.me .bub-body{background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(236,72,153,.2));border-color:rgba(236,72,153,.3)}
+.bub-name{font-size:11px;color:var(--text-3);margin-bottom:4px;font-weight:600}
+.bubble.me .bub-name{text-align:right}
+.bub-txt{font-size:15px;line-height:1.55}
+.bub-scores{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.mini-score{font-family:'Press Start 2P';font-size:9px;padding:3px 6px;border-radius:5px}
+.ms-good{background:rgba(6,214,160,.15);color:var(--accent)}
+.ms-mid{background:rgba(255,214,10,.15);color:var(--accent-2)}
+.ms-low{background:rgba(239,68,68,.15);color:var(--danger)}
+
+/* Input area */
+.input-area{border-top:1px solid var(--border);padding:16px 24px 20px;background:rgba(5,5,20,.5);backdrop-filter:blur(20px)}
+.quick-choices{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.choice{padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;
+  font-size:13px;color:var(--text-2);cursor:pointer;transition:.2s;font-family:inherit;line-height:1.4;text-align:left;max-width:100%}
+.choice:hover{background:rgba(124,58,237,.2);border-color:var(--primary-2);color:#fff}
+.choice .tag{display:inline-block;font-family:'Press Start 2P';font-size:8px;color:var(--text-3);margin-right:6px}
+
+.input-row{display:flex;gap:10px;align-items:flex-end}
+.input-wrap{flex:1;position:relative}
+#userInput{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);color:#fff;
+  padding:14px 60px 14px 16px;border-radius:14px;font-size:15px;font-family:inherit;resize:none;min-height:52px;max-height:120px;transition:.2s}
+#userInput:focus{outline:none;border-color:var(--primary-2);background:rgba(255,255,255,.08)}
+.input-hint{position:absolute;right:12px;bottom:8px;font-size:10px;color:var(--text-3);letter-spacing:.1em}
+.btn-send{padding:14px 22px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;
+  border:none;border-radius:14px;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px;transition:.2s;height:52px;
+  box-shadow:0 8px 20px rgba(124,58,237,.35)}
+.btn-send:hover:not(:disabled){transform:translateY(-1px)}
+.btn-send:disabled{opacity:.5;cursor:not-allowed}
+
+/* Right: scoreboard */
+.right{border-left:1px solid var(--border);padding:20px;overflow-y:auto;background:rgba(5,5,20,.3);display:flex;flex-direction:column;gap:20px}
+.score-panel{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:16px}
+.score-eyebrow{font-family:'Press Start 2P';font-size:9px;color:var(--accent-2);margin-bottom:10px;letter-spacing:.1em}
+.total-score{text-align:center;padding:14px 0}
+.total-num{font-family:'Press Start 2P';font-size:36px;background:linear-gradient(135deg,var(--accent),var(--accent-3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;transition:.4s}
+.total-lab{font-size:11px;color:var(--text-3);letter-spacing:.15em;margin-top:4px}
+
+.dim-list{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.dim{}
+.dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dim-name{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px}
+.dim-emo{font-size:14px}
+.dim-val{font-family:'Press Start 2P';font-size:11px;color:var(--text)}
+.dim-bar{background:rgba(255,255,255,.06);height:6px;border-radius:999px;overflow:hidden}
+.dim-fill{height:100%;border-radius:999px;transition:.5s ease-out}
+.f1{background:linear-gradient(90deg,var(--primary-2),var(--primary))}
+.f2{background:linear-gradient(90deg,var(--accent-2),#f97316)}
+.f3{background:linear-gradient(90deg,var(--accent-3),#0ea5e9)}
+.f4{background:linear-gradient(90deg,var(--accent),#10b981)}
+
+.round-panel .round-list{display:flex;flex-direction:column;gap:6px}
+.round-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px}
+.round-item .r-lab{color:var(--text-3);font-family:'Press Start 2P';font-size:9px}
+.round-item .r-val{font-family:'Press Start 2P';font-size:10px}
+.round-item.active{background:rgba(124,58,237,.15);border:1px solid rgba(236,72,153,.3)}
+.round-item.pending{opacity:.4}
+
+.end-panel{background:linear-gradient(160deg,rgba(255,214,10,.15),rgba(255,214,10,.03));border-color:rgba(255,214,10,.3);
+  display:none}
+.end-panel.show{display:block;animation:pop .4s}
+.end-panel h4{font-family:'Press Start 2P';font-size:11px;color:var(--accent-2);margin-bottom:10px}
+.end-panel p{font-size:12px;color:var(--text-2);line-height:1.5;margin-bottom:12px}
+.end-btn{display:block;width:100%;padding:12px;background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  color:#fff;text-decoration:none;text-align:center;border-radius:10px;font-weight:600;font-size:13px}
+
+@media (max-width:1100px){
+  .stage{grid-template-columns:1fr}
+  .left,.right{display:none}
+}
+
+.typing{display:flex;gap:4px;padding:12px 14px}
+.typing span{width:6px;height:6px;background:var(--text-3);border-radius:50%;animation:typing 1.2s ease-in-out infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+
+.mood-emoji{font-size:16px}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="stars"></div>
+
+<div class="top">
+  <div class="top-left">
+    <a class="exit" href="level.html">✕ 退出</a>
+    <div class="lv-title">LV.03 · 训练场</div>
+  </div>
+  <div class="top-right">
+    <div class="round-info" id="roundInfo">回合 1 / 5</div>
+    <div class="hp" id="hpBar">
+      <div class="hp-heart"></div><div class="hp-heart"></div><div class="hp-heart"></div>
+      <div class="hp-heart o"></div><div class="hp-heart o"></div>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+
+  <aside class="left">
+    <div class="scene-card">
+      <div class="eyebrow">◆ SCENE</div>
+      <h3>17:42 · 你家客厅</h3>
+      <p>妈妈正拿着你的手机，脸色不好看。你需要在 5 个回合内把气氛降下来，并说清楚你的边界。</p>
+    </div>
+
+    <div class="opponent">
+      <div class="opp-avatar">M</div>
+      <div class="opp-info">
+        <h4>妈妈 · 焦虑型</h4>
+        <p>易怒 / 但会被真诚打动</p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div class="mood-bar">
+        <span class="mood-emoji" id="moodEmoji">😠</span>
+        <span>情绪</span>
+        <div class="mood-track"><div class="mood-fill" id="moodFill"></div></div>
+        <span id="moodVal">紧</span>
+      </div>
+    </div>
+
+    <div class="fixy">
+      <div class="fixy-head">
+        <div class="fixy-avatar">F</div>
+        <div>
+          <div class="fixy-name">Fixy 教练</div>
+          <div class="fixy-role">AI 私教 · 陪练模式</div>
+        </div>
+      </div>
+      <div id="fixyTip">先深呼吸。你不用第一句就完美，慢一点接住她的情绪就好。</div>
+
+      <div class="tip-hist">
+        <div class="tip-hist-lab">◆ 修正历史</div>
+        <div class="tip-hist-list" id="tipHist"></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="chat">
+    <div class="chat-log" id="chatLog">
+      <div class="narr-line">— 周三 17:42 · 你到家 —</div>
+    </div>
+
+    <div class="input-area">
+      <div class="quick-choices" id="quickChoices"></div>
+      <div class="input-row">
+        <div class="input-wrap">
+          <textarea id="userInput" placeholder="或者，用你自己的话回她……" rows="1"></textarea>
+          <div class="input-hint">Enter 发送</div>
+        </div>
+        <button class="btn-send" id="btnSend">发送 →</button>
+      </div>
+    </div>
+  </main>
+
+  <aside class="right">
+    <div class="score-panel">
+      <div class="score-eyebrow">◆ 综合评分</div>
+      <div class="total-score">
+        <div class="total-num" id="totalNum">--</div>
+        <div class="total-lab">TOTAL SCORE</div>
+      </div>
+      <div class="dim-list">
+        <div class="dim">
+          <div class="dim-head">
+            <div class="dim-name"><span class="dim-emo">💗</span>共情度</div>
+            <div class="dim-val" id="v1">0</div>
+          </div>
+          <div class="dim-bar"><div class="dim-fill f1" id="b1" style="width:0%"></div></div>
+        </div>
+        <div class="dim">
+          <div class="dim-head">
+            <div class="dim-name"><span class="dim-emo">🛡️</span>边界感</div>
+            <div class="dim-val" id="v2">0</div>
+          </div>
+          <div class="dim-bar"><div class="dim-fill f2" id="b2" style="width:0%"></div></div>
+        </div>
+        <div class="dim">
+          <div class="dim-head">
+            <div class="dim-name"><span class="dim-emo">🧩</span>建设性</div>
+            <div class="dim-val" id="v3">0</div>
+          </div>
+          <div class="dim-bar"><div class="dim-fill f3" id="b3" style="width:0%"></div></div>
+        </div>
+        <div class="dim">
+          <div class="dim-head">
+            <div class="dim-name"><span class="dim-emo">🌊</span>情绪降级</div>
+            <div class="dim-val" id="v4">0</div>
+          </div>
+          <div class="dim-bar"><div class="dim-fill f4" id="b4" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-panel round-panel">
+      <div class="score-eyebrow">◆ 回合记录</div>
+      <div class="round-list" id="roundList">
+        <div class="round-item active"><span class="r-lab">R1</span><span class="r-val" style="color:var(--text-3)">—</span></div>
+        <div class="round-item pending"><span class="r-lab">R2</span><span class="r-val" style="color:var(--text-3)">—</span></div>
+        <div class="round-item pending"><span class="r-lab">R3</span><span class="r-val" style="color:var(--text-3)">—</span></div>
+        <div class="round-item pending"><span class="r-lab">R4</span><span class="r-val" style="color:var(--text-3)">—</span></div>
+        <div class="round-item pending"><span class="r-lab">R5</span><span class="r-val" style="color:var(--text-3)">—</span></div>
+      </div>
+    </div>
+
+    <div class="score-panel end-panel" id="endPanel">
+      <h4>◆ 训练完成</h4>
+      <p id="endText">你完成了这一关。点下面查看完整战报和 Fixy 的详细复盘。</p>
+      <a class="end-btn" href="result.html">查看战报 →</a>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ==== Game state ====
+const state = {
+  round: 0,
+  maxRound: 5,
+  scores: {empathy:0, boundary:0, build:0, calm:0},
+  history: [],
+  mood: 70, // higher = calmer
+  ended: false
+};
+
+const momOpenings = [
+  { text: "你今天怎么这么晚才回来。这个'Lily'是谁？你们聊天怎么说到'周五见'？", mood:70 }
+];
+
+// Mom's reactions matrix, keyed by score profile
+const momReactions = {
+  hostile: [
+    "你这什么态度？我是你妈！",
+    "翅膀硬了是吗？我看你就是在藏东西！",
+    "行啊，那我以后什么都不管你了。",
+    "我供你吃供你喝，翻个手机怎么了？"
+  ],
+  defensive: [
+    "……那你怎么不早告诉我？",
+    "我怎么知道你说的是不是真的。",
+    "手机就是可以翻，你没什么好藏的就不用怕。"
+  ],
+  softening: [
+    "……我就是担心。你最近晚回来次数太多了。",
+    "我不是想控制你，我就是没安全感。",
+    "你说得也有道理，但你能不能主动跟我说说？"
+  ],
+  warm: [
+    "好吧……我承认我不该翻。你能这么说，我心里舒服一点。",
+    "妈妈也不容易，你能理解我，我就没那么焦虑了。",
+    "那我们试试你说的办法。你别嫌妈啰嗦就行。"
+  ]
+};
+
+// Quick choice options per round (some are traps)
+const choicesByRound = [
+  // Round 1 - opening
+  [
+    { text:"你凭什么翻我手机？！", tag:"爆发" },
+    { text:"（一言不发进房间，砰）", tag:"冷战" },
+    { text:"妈，我先把书包放下。我知道你担心我。", tag:"降级" },
+    { text:"就是同学啦，你别瞎猜。", tag:"迎合" }
+  ],
+  // Round 2
+  [
+    { text:"你看到的那些聊天，Lily 是我们班同学，周五约的是打球。", tag:"事实" },
+    { text:"反正你也不信我，随便你！", tag:"爆发" },
+    { text:"我理解你担心，但手机里也有我想自己保留的东西。", tag:"边界" },
+    { text:"哦。（低头玩手指）", tag:"回避" }
+  ],
+  // Round 3
+  [
+    { text:"你以前也这样翻，我一直没说，但每次都很难受。", tag:"感受" },
+    { text:"我需要一点点属于自己的空间，就像你也不想我翻你包一样。", tag:"边界" },
+    { text:"行行行，你继续翻吧，我无所谓。", tag:"讽刺" },
+    { text:"你要是不放心，直接问我就好。", tag:"邀请" }
+  ],
+  // Round 4
+  [
+    { text:"要不我们约定一下：你有担心可以直接问我，我保证不撒谎。", tag:"方案" },
+    { text:"翻手机这件事，能不能先暂停？", tag:"提议" },
+    { text:"我下次注意早点回来，回来主动跟你聊几句。", tag:"承诺" },
+    { text:"反正说了你也不听。", tag:"放弃" }
+  ],
+  // Round 5
+  [
+    { text:"谢谢你愿意听我说这么多。我知道你也不容易。", tag:"感谢" },
+    { text:"那我们就这么定了？下次我回来先给你打个招呼。", tag:"确认" },
+    { text:"（点点头，去帮妈妈倒了杯水）", tag:"行动" },
+    { text:"哼，早该这样。", tag:"傲慢" }
+  ]
+];
+
+// Score each text response
+function scoreResponse(text){
+  const t = text.toLowerCase();
+  let empathy=0, boundary=0, build=0, calm=0;
+
+  // Empathy signals
+  const empathyWords = ['担心','理解','知道你','看到','难为','辛苦','不容易','谢谢你','妈妈也','我知道','听你','感受到'];
+  empathyWords.forEach(w=>{ if(t.includes(w)) empathy+=18; });
+
+  // Boundary signals
+  const boundaryWords = ['我需要','空间','自己的','我想','我不希望','但我','我也','保留','边界','就像你','我感到','让我'];
+  boundaryWords.forEach(w=>{ if(t.includes(w)) boundary+=18; });
+
+  // Constructive signals
+  const buildWords = ['我们','约定','办法','下次','以后','提议','要不','建议','一起','商量','方案','可以吗','好吗','怎么样'];
+  buildWords.forEach(w=>{ if(t.includes(w)) build+=17; });
+
+  // Calming - checked for absence of aggression
+  let aggressive=0;
+  const badWords = ['凭什么','闭嘴','管我','烦','讨厌','恨你','！！','？？','神经','傻','滚','别烦','有病','无所谓','随便你','行行行','哼'];
+  badWords.forEach(w=>{ if(t.includes(w)) aggressive+=25; });
+  calm = Math.max(0, 85 - aggressive);
+  if(t.includes('先') || t.includes('慢慢') || t.includes('别急') || t.includes('冷静')) calm += 10;
+  if(text.length < 4) calm -= 20;
+
+  // Length bonus
+  if(text.length > 15 && text.length < 80) {
+    empathy += 8; boundary += 8; build += 8;
+  }
+
+  // Cap
+  empathy = Math.min(100, Math.max(0, empathy));
+  boundary = Math.min(100, Math.max(0, boundary));
+  build = Math.min(100, Math.max(0, build));
+  calm = Math.min(100, Math.max(0, calm));
+
+  return { empathy, boundary, build, calm };
+}
+
+// Determine mom reaction based on scores
+function momReactionFor(scores){
+  const avg = (scores.empathy + scores.boundary + scores.build + scores.calm) / 4;
+  if (avg < 25) return { key:'hostile', delta:-15 };
+  if (avg < 50) return { key:'defensive', delta:-3 };
+  if (avg < 75) return { key:'softening', delta:12 };
+  return { key:'warm', delta:20 };
+}
+
+function fixyTipFor(scores){
+  const arr = [];
+  if(scores.empathy < 40) arr.push("试试先说一句'我知道你担心我'——把她的情绪先接住，你才有下一句。");
+  if(scores.boundary < 40) arr.push("可以用'我'开头说出感受，比如'我需要一点自己的空间'，不指责，只描述。");
+  if(scores.build < 40) arr.push("加一个'我们一起想办法'的邀请，把她拉到队友位置。");
+  if(scores.calm < 40) arr.push("停一下呼吸。你现在的话里带着火，对方会加倍还回来。");
+  if(arr.length===0){
+    const good = ["很好！你成功'接'住了她的情绪。", "这一句非常稳，继续保持这个节奏。", "🎯 满分潜质。她已经开始松口了。"];
+    return good[Math.floor(Math.random()*good.length)];
+  }
+  return arr[0];
+}
+
+// ==== DOM helpers ====
+const chatLog = document.getElementById('chatLog');
+const quickChoices = document.getElementById('quickChoices');
+const input = document.getElementById('userInput');
+const btnSend = document.getElementById('btnSend');
+const fixyTip = document.getElementById('fixyTip');
+const tipHist = document.getElementById('tipHist');
+
+function addMomMsg(txt){
+  const el = document.createElement('div');
+  el.className = 'bubble';
+  el.innerHTML = `
+    <div class="bub-avatar av-mom">M</div>
+    <div class="bub-body">
+      <div class="bub-name">妈妈</div>
+      <div class="bub-txt">${escapeHtml(txt)}</div>
+    </div>`;
+  chatLog.appendChild(el);
+  scrollBottom();
+}
+
+function addMeMsg(txt, scores){
+  const chips = [
+    scoreChip('共情', scores.empathy),
+    scoreChip('边界', scores.boundary),
+    scoreChip('建设', scores.build),
+    scoreChip('降级', scores.calm),
+  ].join('');
+  const el = document.createElement('div');
+  el.className = 'bubble me';
+  el.innerHTML = `
+    <div class="bub-avatar av-me">你</div>
+    <div class="bub-body">
+      <div class="bub-name">你</div>
+      <div class="bub-txt">${escapeHtml(txt)}</div>
+      <div class="bub-scores">${chips}</div>
+    </div>`;
+  chatLog.appendChild(el);
+  scrollBottom();
+}
+
+function scoreChip(lab, v){
+  const cls = v>=60 ? 'ms-good' : v>=35 ? 'ms-mid' : 'ms-low';
+  return `<span class="mini-score ${cls}">${lab} ${v}</span>`;
+}
+
+function addNarr(txt){
+  const el = document.createElement('div');
+  el.className='narr-line';
+  el.textContent = txt;
+  chatLog.appendChild(el);
+  scrollBottom();
+}
+
+function addTyping(){
+  const el = document.createElement('div');
+  el.className='bubble';
+  el.id='typing';
+  el.innerHTML = `
+    <div class="bub-avatar av-mom">M</div>
+    <div class="bub-body typing"><span></span><span></span><span></span></div>`;
+  chatLog.appendChild(el);
+  scrollBottom();
+}
+function removeTyping(){
+  const el = document.getElementById('typing');
+  if(el) el.remove();
+}
+
+function scrollBottom(){
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ==== Update UI ====
+function updateScoreUI(){
+  const s = state.scores;
+  const n = state.history.length || 1;
+  const avgE = Math.round(s.empathy / n);
+  const avgB = Math.round(s.boundary / n);
+  const avgC = Math.round(s.build / n);
+  const avgK = Math.round(s.calm / n);
+  document.getElementById('v1').textContent = avgE;
+  document.getElementById('v2').textContent = avgB;
+  document.getElementById('v3').textContent = avgC;
+  document.getElementById('v4').textContent = avgK;
+  document.getElementById('b1').style.width = avgE+'%';
+  document.getElementById('b2').style.width = avgB+'%';
+  document.getElementById('b3').style.width = avgC+'%';
+  document.getElementById('b4').style.width = avgK+'%';
+  const total = Math.round((avgE+avgB+avgC+avgK)/4);
+  document.getElementById('totalNum').textContent = state.history.length ? total : '--';
+
+  // Save to sessionStorage-like via window global for result page
+  window.__sfResult = {
+    total, empathy:avgE, boundary:avgB, build:avgC, calm:avgK,
+    rounds: state.history, mood: state.mood
+  };
+  try{ localStorage && localStorage.setItem('sf_result', JSON.stringify(window.__sfResult)); }catch(e){}
+}
+
+function updateMoodUI(){
+  const m = state.mood;
+  document.getElementById('moodFill').style.width = m+'%';
+  let e='😠', l='紧';
+  if(m>=80){e='😊';l='松'} else if(m>=60){e='🙂';l='稳'} else if(m>=40){e='😐';l='硬'} else if(m>=20){e='😠';l='紧'} else {e='😡';l='爆'}
+  document.getElementById('moodEmoji').textContent = e;
+  document.getElementById('moodVal').textContent = l;
+}
+
+function updateRoundList(roundScore){
+  const items = document.querySelectorAll('#roundList .round-item');
+  items.forEach((it,i)=>{
+    if(i < state.round){
+      it.classList.remove('pending','active');
+      const val = it.querySelector('.r-val');
+      const rs = state.history[i]?.total ?? 0;
+      const color = rs>=75 ? 'var(--accent)' : rs>=50 ? 'var(--accent-2)' : 'var(--danger)';
+      val.style.color = color;
+      val.textContent = rs;
+    } else if(i === state.round){
+      it.classList.add('active');
+      it.classList.remove('pending');
+    } else {
+      it.classList.remove('active');
+      it.classList.add('pending');
+    }
+  });
+  document.getElementById('roundInfo').textContent = `回合 ${Math.min(state.round+1, state.maxRound)} / ${state.maxRound}`;
+}
+
+function renderChoices(){
+  quickChoices.innerHTML='';
+  if(state.round >= state.maxRound){ return; }
+  const opts = choicesByRound[state.round];
+  opts.forEach(o=>{
+    const btn = document.createElement('button');
+    btn.className='choice';
+    btn.innerHTML = `<span class="tag">[${o.tag}]</span>${o.text}`;
+    btn.onclick = ()=> submitResponse(o.text);
+    quickChoices.appendChild(btn);
+  });
+}
+
+function updateHP(){
+  const bar = document.getElementById('hpBar');
+  // HP goes down if mood keeps low
+  const lost = state.history.filter(h=>h.total<40).length;
+  const hpN = Math.max(1, 3-lost);
+  const html = [];
+  for(let i=0;i<5;i++) html.push(`<div class="hp-heart ${i>=hpN? 'o':''}"></div>`);
+  bar.innerHTML = html.join('');
+}
+
+function pushFixyTip(tip){
+  const t = document.createElement('div');
+  t.className='tip-item';
+  t.textContent = `R${state.round}: ${tip}`;
+  tipHist.prepend(t);
+}
+
+// ==== Main flow ====
+function startGame(){
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      removeTyping();
+      const op = momOpenings[0];
+      addMomMsg(op.text);
+      state.mood = op.mood;
+      updateMoodUI();
+      renderChoices();
+    }, 900);
+  }, 400);
+}
+
+function submitResponse(text){
+  if(state.ended) return;
+  const t = text.trim();
+  if(!t){ return; }
+  const scores = scoreResponse(t);
+  const total = Math.round((scores.empathy+scores.boundary+scores.build+scores.calm)/4);
+
+  // Add player msg
+  addMeMsg(t, scores);
+
+  // Aggregate scores (sum, will average on render)
+  state.scores.empathy += scores.empathy;
+  state.scores.boundary += scores.boundary;
+  state.scores.build += scores.build;
+  state.scores.calm += scores.calm;
+  state.history.push({ text:t, ...scores, total });
+
+  // Update mood
+  const react = momReactionFor(scores);
+  state.mood = Math.max(0, Math.min(100, state.mood + react.delta));
+
+  // Fixy tip
+  const tip = fixyTipFor(scores);
+  fixyTip.textContent = tip;
+  pushFixyTip(tip);
+
+  state.round += 1;
+
+  updateScoreUI();
+  updateMoodUI();
+  updateHP();
+  updateRoundList();
+
+  input.value='';
+  autoResize();
+
+  // Clear quick choices while mom is typing
+  quickChoices.innerHTML='';
+
+  // Mom reply after delay
+  if(state.round >= state.maxRound){
+    setTimeout(()=> endGame(), 900);
+    return;
+  }
+
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      removeTyping();
+      const pool = momReactions[react.key];
+      const msg = pool[Math.floor(Math.random()*pool.length)];
+      addMomMsg(msg);
+      renderChoices();
+    }, 900 + Math.random()*600);
+  }, 500);
+}
+
+function endGame(){
+  state.ended = true;
+  quickChoices.innerHTML='';
+  const total = window.__sfResult?.total ?? 0;
+  let closing;
+  if(total>=75){
+    closing = "妈妈叹了口气，把手机递给你。'你说得对，妈妈也需要学一学。' 她拍了拍你的肩。";
+  } else if(total>=50){
+    closing = "妈妈没再说什么，但她把手机放下了。空气里的紧张感松了半截。";
+  } else {
+    closing = "妈妈皱着眉，把手机重重放下。'我们改天再说。' 她转身走开了。";
+  }
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      removeTyping();
+      const finish = {
+        hostile:"'算了，我不跟你说了。'（她把手机放下，转身走开）",
+        defensive:"'……好吧，我们改天再谈。'",
+        softening:"'妈妈也需要学一学。谢谢你愿意说。'",
+        warm:"'嗯……我知道了。我们就这么约定。'"
+      };
+      const key = total>=75?'warm':total>=50?'softening':total>=25?'defensive':'hostile';
+      addMomMsg(finish[key]);
+      setTimeout(()=>{
+        addNarr(closing);
+        document.getElementById('endPanel').classList.add('show');
+        document.getElementById('endText').textContent = total>=75
+          ? `Nice! 综合分 ${total}，你成功把冲突降级了。查看完整战报，看看 Fixy 怎么复盘。`
+          : total>=50
+          ? `完成！综合分 ${total}。有几处可以更好。看战报里 Fixy 的建议。`
+          : `本关综合分 ${total}。别灰心——再来一次通常会好很多。查看战报。`;
+      }, 600);
+    }, 900);
+  }, 300);
+}
+
+// ==== Input handlers ====
+function autoResize(){
+  input.style.height='auto';
+  input.style.height = Math.min(120, input.scrollHeight) + 'px';
+}
+input.addEventListener('input', autoResize);
+input.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    if(input.value.trim()) submitResponse(input.value);
+  }
+});
+btnSend.onclick = ()=>{ if(input.value.trim()) submitResponse(input.value); };
+
+// Init
+updateScoreUI();
+updateMoodUI();
+updateRoundList();
+startGame();
+</script>
+</body>
+</html>
