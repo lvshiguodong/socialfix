@@ -1,11 +1,18 @@
 /* Socialfix · Practice quiz renderer
- * Reads <div id="quizList" data-cat="study|family|life"> from the host page,
- * filters window.SCENES by that cat and renders collapsible questions. */
+ * Reads <div id="quizList" data-cat="..." [data-id="..."]> from the host page.
+ * - If data-id is present: pulls the two quizzes from window.LEVEL_QUIZZES[cat][id]
+ * - Otherwise: filters window.SCENES by cat (used on category pages) */
 (function(){
   const list = document.getElementById('quizList');
   if(!list) return;
   const cat = list.dataset.cat;
-  const scenes = (window.SCENES || []).filter(function(s){ return s.cat === cat; });
+  const id  = list.dataset.id;
+  let scenes = [];
+  if(id && window.LEVEL_QUIZZES && window.LEVEL_QUIZZES[cat] && window.LEVEL_QUIZZES[cat][id]){
+    scenes = window.LEVEL_QUIZZES[cat][id];
+  } else {
+    scenes = (window.SCENES || []).filter(function(s){ return s.cat === cat; });
+  }
   if(!scenes.length) return;
 
   const letters = ['A','B','C','D'];

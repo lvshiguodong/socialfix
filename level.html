@@ -108,6 +108,7 @@ h1{font-size:clamp(38px,6vw,68px);font-weight:900;letter-spacing:-.03em;line-hei
   h1{font-size:32px}
 }
 </style>
+<link rel="stylesheet" href="practice.css">
 </head>
 <body>
 <div class="bg" id="bg"></div>
@@ -191,6 +192,15 @@ h1{font-size:clamp(38px,6vw,68px);font-weight:900;letter-spacing:-.03em;line-hei
     <a href="simulator.html">🎯 进入训练场</a>
   </div>
 </div>
+
+<section class="practice">
+  <div class="container">
+    <span class="eyebrow">Practice Quiz</span>
+    <h2 class="sec-title">练手：两道相关的选择题</h2>
+    <p class="practice-intro">和这一关直接对应，选一个答案，看看真实场景里会发生什么——<b>没有对错，只有反馈</b>。</p>
+    <div class="quiz-list" id="quizList"></div>
+  </div>
+</section>
 
 <script>
 const CATS = {
@@ -744,6 +754,12 @@ const id  = parseInt(getParam('id')||'1',10);
 const catCfg = CATS[cat] || CATS.study;
 const level = (LEVELS[cat] && LEVELS[cat][id]) || LEVELS.study[1];
 
+// Wire the practice-quiz list to this level so practice.js picks it up.
+(function(){
+  const ql = document.getElementById('quizList');
+  if(ql){ ql.dataset.cat = cat; ql.dataset.id = String(id); }
+})();
+
 document.getElementById('bg').style.setProperty('--tint1', catCfg.tint1);
 document.getElementById('bg').style.setProperty('--tint2', catCfg.tint2);
 document.documentElement.style.setProperty('--primary',  catCfg.color1);
@@ -792,5 +808,7 @@ if(LEVELS[cat] && LEVELS[cat][nextId]){
   nextBtn.textContent = '回到关卡地图 →';
 }
 </script>
+<script src="quizzes.js"></script>
+<script src="practice.js"></script>
 </body>
 </html>
