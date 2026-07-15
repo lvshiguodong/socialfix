@@ -158,7 +158,7 @@ footer{padding:80px 40px 40px;text-align:center;border-top:1px solid var(--borde
   <div class="arena" id="arena">
     <div class="arena-top">
       <span class="arena-tag" id="arenaTag">场景</span>
-      <span class="arena-count" id="arenaCount">SCENE 01 / 12</span>
+      <span class="arena-count" id="arenaCount">SCENE -- / --</span>
     </div>
     <h2 class="arena-title" id="arenaTitle">加载中…</h2>
     <div class="arena-scene" id="arenaScene"></div>
@@ -171,7 +171,7 @@ footer{padding:80px 40px 40px;text-align:center;border-top:1px solid var(--borde
 
     <div class="arena-actions">
       <button class="btn btn-primary" id="nextBtn">🎲 换一个场景</button>
-      <a class="btn btn-ghost" href="index.html">回到分类</a>
+      <a class="btn btn-ghost" href="index.html">回到首页</a>
     </div>
   </div>
 
@@ -484,6 +484,15 @@ let currentFilter = 'all';
 let filtered = SCENES.slice();
 let currentIdx = 0;
 let answered = false;
+let sessionRounds = [];
+let lastSceneTitle = '';
+
+/* Score mapping: kind → {empathy, boundary, build, calm} */
+const SCORE_MAP = {
+  good: { empathy:80, boundary:70, build:75, calm:85 },
+  mid:  { empathy:48, boundary:42, build:42, calm:52 },
+  bad:  { empathy:22, boundary:20, build:20, calm:28 }
+};
 
 function shuffleFrom(){
   filtered = SCENES.filter(s => currentFilter === 'all' || s.cat === currentFilter);
@@ -493,6 +502,7 @@ function shuffleFrom(){
 
 function render(){
   const s = filtered[currentIdx];
+  lastSceneTitle = s.title;
   const catNames = { study:'🎓 学习场景', family:'🏠 家庭场景', life:'🌆 生活场景' };
   const arenaTag = document.getElementById('arenaTag');
   arenaTag.textContent = catNames[s.cat] || s.tag;
@@ -527,6 +537,15 @@ function showFeedback(idx){
     if(i !== idx) btn.classList.add('disabled');
   });
 
+  /* Record this round for result page */
+  const sc = SCORE_MAP[c.kind] || SCORE_MAP.mid;
+  const roundTotal = Math.round((sc.empathy + sc.boundary + sc.build + sc.calm) / 4);
+  sessionRounds.push({
+    text: c.text.replace(/<[^>]*>/g,'').replace(/&[^;]+;/g,'').substring(0,60),
+    empathy: sc.empathy, boundary: sc.boundary, build: sc.build, calm: sc.calm,
+    total: roundTotal
+  });
+
   const icons = { good:'🌟', mid:'💭', bad:'⚠️' };
   const labels = { good:'非常好的选择', mid:'可以再想想', bad:'这样的话' };
   const fb = document.createElement('div');
@@ -541,6 +560,37 @@ function showFeedback(idx){
     '</div>' +
     '<div class="feedback-body">'+c.body+'</div>' +
     '<div class="feedback-tip">'+c.tip+'</div>';
+
+  /* Add "查看战报" button if at least 1 round recorded */
+  if(sessionRounds.length >= 1){
+    const viewBtn = document.createElement('a');
+    viewBtn.className = 'btn btn-primary';
+    viewBtn.style.marginTop = '16px';
+    viewBtn.style.display = 'inline-flex';
+    viewBtn.textContent = '📊 查看战报';
+    viewBtn.addEventListener('click', function(){
+      /* Compute averages */
+      var n = sessionRounds.length;
+      var avgEmp=0, avgBnd=0, avgBld=0, avgClm=0, avgTotal=0;
+      sessionRounds.forEach(function(r){
+        avgEmp += r.empathy; avgBnd += r.boundary;
+        avgBld += r.build; avgClm += r.calm; avgTotal += r.total;
+      });
+      var data = {
+        sceneTitle: lastSceneTitle,
+        total: Math.round(avgTotal / n),
+        empathy: Math.round(avgEmp / n),
+        boundary: Math.round(avgBnd / n),
+        build: Math.round(avgBld / n),
+        calm: Math.round(avgClm / n),
+        rounds: sessionRounds
+      };
+      try{ localStorage.setItem('sf_result', JSON.stringify(data)); }catch(e){}
+      window.location.href = 'result.html';
+    });
+    fb.appendChild(viewBtn);
+  }
+
   document.getElementById('feedbackWrap').appendChild(fb);
 }
 
@@ -555,6 +605,7 @@ document.querySelectorAll('.filter').forEach(function(btn){
     document.querySelectorAll('.filter').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
+    sessionRounds = [];
     shuffleFrom();
     render();
   });

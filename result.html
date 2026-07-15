@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>战报 · LV.03 — Socialfix</title>
+<title>战报 — Socialfix</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -140,17 +140,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
 .mt-mid{background:rgba(255,214,10,.15);color:var(--accent-2)}
 .mt-low{background:rgba(239,68,68,.15);color:var(--danger)}
 
-/* Achievements */
-.achieve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
-.ach{background:linear-gradient(160deg,rgba(255,214,10,.15),rgba(255,214,10,.03));
-  border:1px solid rgba(255,214,10,.3);border-radius:14px;padding:14px;text-align:center;transition:.25s;position:relative;overflow:hidden}
-.ach:hover{transform:translateY(-3px)}
-.ach.new::before{content:"NEW";position:absolute;top:6px;right:6px;font-family:'Press Start 2P';font-size:8px;
-  background:var(--accent);color:#0a0a1f;padding:2px 5px;border-radius:4px}
-.ach-emo{font-size:34px;margin-bottom:6px}
-.ach-name{font-size:12px;font-weight:700;margin-bottom:4px}
-.ach-desc{font-size:10px;color:var(--text-3);line-height:1.4}
-
 /* Fixy replay */
 .fixy-block{background:linear-gradient(160deg,rgba(6,214,160,.1),rgba(56,189,248,.04));
   border:1px solid rgba(6,214,160,.25);border-radius:16px;padding:18px;margin-bottom:14px}
@@ -162,14 +151,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
 .fb-txt{font-size:13px;color:var(--text-2);line-height:1.6}
 .fb-txt strong{color:var(--text);font-weight:600}
 .fb-txt em{color:var(--accent-2);font-style:normal;background:rgba(255,214,10,.1);padding:1px 6px;border-radius:4px;font-size:12px}
-
-/* Rewards */
-.rewards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
-.reward{background:linear-gradient(160deg,rgba(124,58,237,.15),rgba(236,72,153,.05));
-  border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
-.rw-emo{font-size:26px;margin-bottom:4px}
-.rw-val{font-family:'Press Start 2P';font-size:13px;color:var(--accent-2);margin-bottom:4px}
-.rw-lab{font-size:11px;color:var(--text-3)}
 
 /* Bottom actions */
 .bottom-bar{background:linear-gradient(160deg,rgba(124,58,237,.2),rgba(236,72,153,.1));
@@ -190,7 +171,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
   .main-score-card{grid-template-columns:1fr;text-align:center}
   .rank-line{justify-content:center}
   .grid{grid-template-columns:1fr}
-  .achieve-grid,.rewards-grid{grid-template-columns:repeat(2,1fr)}
   .result-hero h1{font-size:34px}
   .ring-wrap{margin:0 auto}
 }
@@ -207,7 +187,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
     <div class="logo-text">SOCIALFIX</div>
   </a>
   <div class="nav-right">
-    <a href="journey.html">← 冒险地图</a>
+    <a href="index.html">← 回到分类</a>
     <a href="simulator.html" style="color:var(--accent-2)" class="pixel">↺ 再练一次</a>
   </div>
 </nav>
@@ -217,7 +197,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
   <div class="result-hero">
     <div class="stamp" id="stamp"></div>
     <h1>本回合<br><span id="rankTitle">干得漂亮！</span></h1>
-    <p class="sub" id="heroSub">你完成了 LV.03「爸妈翻我手机」。下面是 Fixy 为你做的完整战报。</p>
+    <p class="sub" id="heroSub">下面是 Fixy 为你做的完整战报。</p>
   </div>
 
   <div class="main-score-card">
@@ -256,7 +236,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
       </div>
       <div class="actions">
         <a href="simulator.html" class="btn btn-primary">↺ 再练一次</a>
-        <a href="journey.html" class="btn btn-ghost">→ 下一关</a>
+        <a href="index.html" class="btn btn-ghost">→ 回到分类</a>
       </div>
     </div>
   </div>
@@ -383,81 +363,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 40px;
     </div>
   </div>
 
-  <div class="grid">
-    <div class="panel">
-      <div class="eyebrow">◆ 解锁成就</div>
-      <h3>本次训练拿到的徽章</h3>
-      <div class="achieve-grid">
-        <div class="ach new">
-          <div class="ach-emo">🕊️</div>
-          <div class="ach-name">冲突降级</div>
-          <div class="ach-desc">首次在家庭对话中把气氛降下来</div>
-        </div>
-        <div class="ach new">
-          <div class="ach-emo">🧭</div>
-          <div class="ach-name">先接再立</div>
-          <div class="ach-desc">先共情再立界的完整回合</div>
-        </div>
-        <div class="ach">
-          <div class="ach-emo">🌱</div>
-          <div class="ach-name">连续 3 关</div>
-          <div class="ach-desc">今日连续通关 3 个关卡</div>
-        </div>
-        <div class="ach" style="opacity:.35">
-          <div class="ach-emo">💎</div>
-          <div class="ach-name">满分回合</div>
-          <div class="ach-desc">单回合综合分 ≥ 95</div>
-        </div>
-        <div class="ach" style="opacity:.35">
-          <div class="ach-emo">👑</div>
-          <div class="ach-name">章节王者</div>
-          <div class="ach-desc">通关第一章所有关卡</div>
-        </div>
-        <div class="ach" style="opacity:.35">
-          <div class="ach-emo">🎯</div>
-          <div class="ach-name">零攻击</div>
-          <div class="ach-desc">全场无攻击性词汇</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="eyebrow">◆ 本回合奖励</div>
-      <h3>装备已放入你的背包</h3>
-      <div class="rewards-grid">
-        <div class="reward">
-          <div class="rw-emo">⭐</div>
-          <div class="rw-val">+ 180</div>
-          <div class="rw-lab">XP</div>
-        </div>
-        <div class="reward">
-          <div class="rw-emo">🪙</div>
-          <div class="rw-val">+ 32</div>
-          <div class="rw-lab">Coins</div>
-        </div>
-        <div class="reward">
-          <div class="rw-emo">🔥</div>
-          <div class="rw-val">DAY 6</div>
-          <div class="rw-lab">连续训练</div>
-        </div>
-        <div class="reward">
-          <div class="rw-emo">🎁</div>
-          <div class="rw-val">×3</div>
-          <div class="rw-lab">解锁下一章</div>
-        </div>
-      </div>
-      <div style="margin-top:18px;padding:14px;background:rgba(6,214,160,.08);border:1px dashed rgba(6,214,160,.3);border-radius:12px;font-size:13px;color:var(--text-2);line-height:1.5">
-        🎉 <strong style="color:var(--accent)">解锁提示：</strong>再通关 1 关，即可进入 CH.2「校园与朋友」章节，遇到"暗恋对象已读不回"等场景。
-      </div>
-    </div>
-  </div>
-
   <div class="bottom-bar">
     <h2>再来一次，你会更稳。</h2>
     <p>数据显示：练过 3 遍的同学，在真实生活中用出这些话的成功率高 78%。</p>
     <div class="bottom-actions">
       <a href="simulator.html" class="btn btn-primary">↺ 再挑战一次</a>
-      <a href="journey.html" class="btn btn-ghost">🗺️ 回到冒险地图</a>
+      <a href="index.html" class="btn btn-ghost">🗺️ 回到分类</a>
       <a href="index.html" class="btn btn-ghost">🏠 回首页</a>
     </div>
   </div>
@@ -567,13 +478,18 @@ if(total >= 85){
   heroSub.textContent = '这一次分数偏低——但每个人都是从这里开始的。看看 Fixy 帮你标出的高光和低谷。';
 }
 
+// Dynamic subtitle from result data
+if(res.sceneTitle){
+  heroSub.textContent = '你完成了「' + res.sceneTitle + '」。下面是 Fixy 为你做的完整战报。';
+}
+
 // Radar
 (function drawRadar(){
   const svg = document.getElementById('radar');
   const cx=160, cy=160, R=110;
   const angles = [-90, 0, 90, 180]; // top right bottom left
-  const vals = [emp, bld, clm, bnd]; // top,right,bottom,left
-  const labels = ['💗 共情', '🧩 建设', '🌊 降级', '🛡️ 边界'];
+  const vals = [emp, bnd, bld, clm]; // top,right,bottom,left
+  const labels = ['💗 共情', '🛡️ 边界', '🧩 建设', '🌊 降级'];
   const grid = document.getElementById('radarGrid');
   const axes = document.getElementById('radarAxes');
   const labG = document.getElementById('radarLabels');
